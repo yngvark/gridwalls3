@@ -6,12 +6,11 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     # cert-manager.io/cluster-issuer: "letsencrypt-staging"
-    service.beta.kubernetes.io/do-loadbalancer-hostname: "do.yngvark.com"
 spec:
   tls:
   - hosts:
     - echo1.yngvark.com
-    - echo2.yngvark.com
+    - echo4.k8s.yngvark.com
     secretName: echo-tls
   rules:
   - host: echo1.yngvark.com
@@ -20,7 +19,7 @@ spec:
       - backend:
           serviceName: echo1
           servicePort: 80
-  - host: echo2.yngvark.com
+  - host: echo4.k8s.yngvark.com
     http:
       paths:
       - backend:
