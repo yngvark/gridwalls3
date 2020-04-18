@@ -1,0 +1,4 @@
+.idea/
+src/.vscode
+src/dist
+src/lib/node_modules
