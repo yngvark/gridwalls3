@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="zombie3-js-1.0-SNAPSHOT">
+    <output-path>$PROJECT_DIR$/build/libs</output-path>
+    <root id="archive" name="zombie3-js-1.0-SNAPSHOT.jar">
+      <element id="module-output" name="zombie3.jsMain" />
+    </root>
+  </artifact>
+</component>
