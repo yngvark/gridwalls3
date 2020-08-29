@@ -6,5 +6,5 @@ import kotlin.js.JsExport
 @JsExport
 @ExperimentalJsExport
 interface ZombieInt {
-    fun hello()
+    fun hello(): String
 }

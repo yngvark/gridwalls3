@@ -6,7 +6,7 @@ import kotlin.js.JsExport
 @JsExport
 @ExperimentalJsExport
 class Zombie : ZombieInt {
-    override fun hello() {
-        println("HELLO!")
+    override fun hello(): String {
+         return "HELLO FROM KOTLIN!"
     }
 }

@@ -5,13 +5,11 @@ import org.jetbrains.kotlin.js.parser.sourcemaps.JsonObject
 import org.jetbrains.kotlin.js.parser.sourcemaps.JsonString
 import org.jetbrains.kotlin.js.parser.sourcemaps.parseJson
 
-//import com.google.gson.JsonObject
-
 plugins {
     kotlin("multiplatform") version "1.4.0"
 }
 group = "com.gridwalls"
-version = "1.0-SNAPSHOT"
+version = project.properties["version"] ?: "NO-VERSION-FOUND"
 
 repositories {
     mavenCentral()
@@ -28,11 +26,6 @@ kotlin {
 
     js("browser") {
         browser {
-            testTask {
-                useKarma {
-                    useChromeHeadless()
-                }
-            }
             binaries.executable()
         }
     }
@@ -45,18 +38,20 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
+
         val jvmMain by getting
         val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test-junit5"))
             }
         }
+
         val browserMain by getting
-        val browserTest by getting {
-            dependencies {
-                implementation(kotlin("test-js"))
-            }
-        }
+//        val browserTest by getting {
+//            dependencies {
+//                implementation(kotlin("test-js"))
+//            }
+//        }
 
         js().compilations["main"].defaultSourceSet {
             dependencies {
@@ -65,6 +60,13 @@ kotlin {
         }
     }
 }
+
+tasks.build {
+    dependsOn("packageJsonUmbrella")
+}
+
+// Workaround for bug that happens when we bump a version: Some package.jsons doesn't get updated version.
+tasks.getByName("build").dependsOn(tasks.getByName("packageJsonUmbrella"))
 
 tasks.register("npmBuild") {
     dependsOn(tasks.named("build"))
@@ -79,13 +81,12 @@ fun makePackageJsonPublishable() {
 
     // Modify Json
     val packageJson = file("$buildDir/js/packages/${packageName}/package.json")
-    val outJson = file("$buildDir/js/packages/${packageName}/package2.json")
 
     val pj = parseJson(packageJson) as JsonObject
     pj.properties["publishConfig"] = JsonObject("registry" to JsonString("https://npm.pkg.github.com/"))
     pj.properties["repository"] = JsonString("git@github.com:yngvark/gridwalls3.git")
     pj.properties["name"] = JsonString("@yngvark/${packageName}")
-    // TODO: Set version from build.gradle.kts version
+    pj.properties["version"] = JsonString(project.version.toString())
 
     // Convert to pretty printed string
     val gson:Gson = GsonBuilder().setPrettyPrinting().create()
