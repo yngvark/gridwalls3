@@ -14,17 +14,11 @@ module.exports = {
         ]
     },
     devtool: 'source-map',
-    devServer: {
-        contentBase: __dirname + "/public",
-        // publicPath: "/js",
-        port: 3000
-    },
     output: {
         path: __dirname + "/dist",
-        publicPath: "/js",
+        // publicPath: "/dist",
         filename: "bundle.js"
     },
-    watch: true,
     resolve: {
         extensions: ['.ts', '.tsx', '.js']
     }

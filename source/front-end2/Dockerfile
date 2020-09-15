@@ -11,4 +11,4 @@ COPY src .
 
 RUN npm run build
 
-CMD ["npm", "run", "start" ]
+CMD ["node", "app.js" ]

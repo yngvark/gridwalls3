@@ -1,6 +1,6 @@
 class Game {
     run(): void {
-        console.log("Hello from Game 22")
+        console.log("Hello from Game 33")
     }
 }
 document.addEventListener('D' +
