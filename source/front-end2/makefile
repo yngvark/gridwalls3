@@ -5,7 +5,7 @@ help: ## Print this menu
 build-docker: ## -
 	docker build -t gridwalls_zombie .
 
-run-docker: build-docker
+run-docker: build-docker ## -
 	docker run --rm -p 30000:3000 gridwalls_zombie
 
 run: ## -
