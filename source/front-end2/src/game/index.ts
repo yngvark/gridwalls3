@@ -1,10 +1,9 @@
-class Game {
-    run(): void {
-        console.log("Hello from Game 33")
-    }
-}
-document.addEventListener('D' +
-    'OMContentLoaded', function() {
-    console.log("Hello from DOMContentLoaded. Running game.");
-    new Game().run()
+import {Game} from "./Game";
+import {Network} from "./Network";
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Hello from DOMContentLoaded. Running game!!!");
+
+    let network = new Network("localhost")
+    new Game(network).run()
 }, false);
