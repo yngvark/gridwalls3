@@ -6,7 +6,7 @@ module.exports = merge(common, {
     devServer: {
         contentBase: __dirname + "/public",
         // publicPath: "/js",
-        port: 3001
+        port: 3000
     },
     watch: true
 })
