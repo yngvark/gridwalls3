@@ -3,7 +3,7 @@ import {Logger} from './Logger'
 export class Network {
     private logger:Logger = Logger.create(this)
 
-    private host: string;
+    private readonly host: string;
 
     constructor(host: string) {
         this.host = host

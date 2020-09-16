@@ -1,23 +1,27 @@
 export class Logger {
-    private name:String
+    private readonly name:string
 
-    static create(instance): Logger {
-        return new Logger(instance.constructor.name)
+    static create(instance:unknown): Logger {
+        if (instance instanceof Object) {
+            return new Logger(instance.constructor.name)
+        }
+
+        return new Logger("")
     }
 
     constructor(name: string) {
         this.name = name
     }
 
-    info(msg: any): void {
-        console.log(this.format(msg))
+    info(msg: unknown): void {
+        console.log(this.getPrefix(), msg)
     }
 
-    debug(msg: any): void {
-        console.debug(this.format(msg))
+    debug(msg: unknown): void {
+        console.debug(this.getPrefix(), msg)
     }
 
-    private format(msg: any) {
-        return `[${this.name}] ${msg}`
+    private getPrefix(): string {
+        return `[${this.name}]`
     }
 }

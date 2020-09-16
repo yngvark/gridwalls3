@@ -4,6 +4,6 @@ import {Network} from "./Network";
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Hello from DOMContentLoaded. Running game!!!");
 
-    let network = new Network("localhost")
+    const network = new Network("localhost")
     new Game(network).run()
 }, false);
