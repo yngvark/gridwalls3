@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("Hello from DOMContentLoaded. Running game!!!");
 
     // const network = new Network("ws://localhost:8080/myws/echo")
-    const network = new Network("ws://localhost:8080/echo")
+    const network = new Network("ws://localhost:8080/zombie")
     const game = new Game(network)
 
     document.getElementById("connectBtn").onclick = async () => {
