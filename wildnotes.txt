@@ -46,6 +46,4 @@ VURDER:
 
 
 NESTE GANG:
-- Finn ut av hvordan få webpack og express til å funke sammen. Kanskje bare bruke webpack lokalt, mens når
-jeg kjører er det kun express, dvs node, i Dockerfile.
-https://stackoverflow.com/questions/35233291/running-a-node-express-server-using-webpack-dev-server
+- Ktor + websockets er noe drit. Se om det finnes bedre, enkelt bibliotek.
