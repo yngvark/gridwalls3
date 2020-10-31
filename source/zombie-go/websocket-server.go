@@ -24,137 +24,66 @@ var upgrader = websocket.Upgrader{
 		return len(origin) > 0 && origin[0] == "http://localhost:3000"
 	},
 	EnableCompression: true,
-} // use default options
-
-func echo(writer http.ResponseWriter, request *http.Request) {
-	connection, err := upgrader.Upgrade(writer, request, nil)
-	if err != nil {
-		log.Print("upgrade:", err)
-		return
-	}
-	defer connection.Close()
-	for {
-		messageType, message, err := connection.ReadMessage()
-		if err != nil {
-			log.Println("read:", err)
-			break
-		}
-		log.Printf("recv: %s", message)
-		err = connection.WriteMessage(messageType, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
-		}
-	}
 }
 
 func zombie(writer http.ResponseWriter, request *http.Request) {
 	connection, err := upgrader.Upgrade(writer, request, nil)
-
 	if err != nil {
 		log.Print("upgrade:", err)
 		return
 	}
 
-	fmt.Println("Starting to generate")
-	go generate(connection)
+	defer closeConnection(connection)
+
+	for {
+		messageType, message, err := connection.ReadMessage()
+		if err != nil {
+			log.Println("Read error:", err)
+			break
+		}
+
+		err = handleIncomingMsg(message, messageType, connection)
+		if err != nil {
+			log.Printf("errror when handling incoming message: %w", err)
+			return
+		}
+	}
+
+	fmt.Println("Zombie done")
+}
+
+func closeConnection(connection *websocket.Conn) {
+	func() {
+		err := connection.Close()
+		if err != nil {
+			log.Println("Error when closing connection")
+		}
+	}()
+}
+
+func handleIncomingMsg(message []byte, messageType int, connection *websocket.Conn) error {
+	log.Printf("Received: %s", message)
+	msgString := string(message)
+	reply := "You said: " + msgString
+
+	err := connection.WriteMessage(messageType, []byte(reply))
+	if err != nil {
+		log.Println("write:", err)
+		return err
+	}
+
+	return nil
 }
 
 func generate(connection *websocket.Conn) {
-
+	fmt.Println("Starting to generate...")
 	connection.WriteMessage(websocket.TextMessage, []byte("Here is a string...."))
 }
-
 
 func main() {
 	fmt.Println("Running")
 	flag.Parse()
 	log.SetFlags(0)
-	http.HandleFunc("/echo", echo)
 	http.HandleFunc("/zombie", zombie)
 	log.Fatal(http.ListenAndServe(*serverAddr, nil))
 }
-
-
-//func home(w http.ResponseWriter, r *http.Request) {
-//	homeTemplate.Execute(w, "ws://"+r.Host+"/echo")
-//}
-
-//var homeTemplate = template.Must(template.New("").Parse(`
-//<!DOCTYPE html>
-//<html>
-//<head>
-//<meta charset="utf-8">
-//<script>
-//window.addEventListener("load", function(evt) {
-//
-//    var output = document.getElementById("output");
-//    var input = document.getElementById("input");
-//    var ws;
-//
-//    var print = function(message) {
-//        var d = document.createElement("div");
-//        d.textContent = message;
-//        output.appendChild(d);
-//    };
-//
-//    document.getElementById("open").onclick = function(evt) {
-//        if (ws) {
-//            return false;
-//        }
-//        ws = new WebSocket("{{.}}");
-//        ws.onopen = function(evt) {
-//            print("OPEN");
-//        }
-//        ws.onclose = function(evt) {
-//            print("CLOSE");
-//            ws = null;
-//        }
-//        ws.onmessage = function(evt) {
-//            print("RESPONSE: " + evt.data);
-//        }
-//        ws.onerror = function(evt) {
-//            print("ERROR: " + evt.data);
-//        }
-//        return false;
-//    };
-//
-//    document.getElementById("send").onclick = function(evt) {
-//        if (!ws) {
-//            return false;
-//        }
-//        print("SEND: " + input.value);
-//        ws.send(input.value);
-//        return false;
-//    };
-//
-//    document.getElementById("close").onclick = function(evt) {
-//        if (!ws) {
-//            return false;
-//        }
-//        ws.close();
-//        return false;
-//    };
-//
-//});
-//</script>
-//</head>
-//<body>
-//<table>
-//<tr><td valign="top" width="50%">
-//<p>Click "Open" to create a connection to the server,
-//"Send" to send a message to the server and "Close" to close the connection.
-//You can change the message and send multiple times.
-//<p>
-//<form>
-//<button id="open">Open</button>
-//<button id="close">Close</button>
-//<p><input id="input" type="text" value="Hello world!">
-//<button id="send">Send</button>
-//</form>
-//</td><td valign="top" width="50%">
-//<div id="output"></div>
-//</td></tr></table>
-//</body>
-//</html>
-//`))
