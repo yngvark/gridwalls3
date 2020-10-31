@@ -2,12 +2,18 @@ import {Network} from "./Network";
 
 export class Game {
     private network: Network;
+
     constructor(network: Network) {
         this.network = network
     }
 
-    run(): void {
+    public async run(): Promise<void> {
         console.log("Hello from Game 33")
-        this.network.connect()
+        await this.network.connect()
+        this.network.send("hello")
+    }
+
+    stop() {
+        this.network.disconnect()
     }
 }
