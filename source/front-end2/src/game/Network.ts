@@ -33,7 +33,7 @@ export class Network {
             }
 
             websocket.onmessage = event => {
-                this.log.info("Received message!", event)
+                this.log.info("Received message!", event.data)
             }
         })
 
@@ -45,7 +45,7 @@ export class Network {
         this.websocket.send(msg)
     }
 
-    disconnect() {
+    disconnect():void {
         this.log.info("Disconnecting")
         this.websocket.close()
     }
