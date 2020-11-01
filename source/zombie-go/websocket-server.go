@@ -1,7 +1,3 @@
-// Copyright 2015 The Gorilla WebSocket Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
 package main
 
 import (
@@ -33,32 +29,39 @@ func zombie(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	defer closeConnection(connection)
+	log.Println("Client connected!")
 
+	done := make(chan bool)
+	defer closeConnectionWhenDone(done, connection)
+
+	go readIncoming(connection, done)
+	go generate(connection)
+}
+
+func closeConnectionWhenDone(done chan bool, connection *websocket.Conn) {
+	<-done
+	err := connection.Close()
+	if err != nil {
+		log.Println("error when closing connection: %w", err)
+	}
+}
+
+func readIncoming(connection *websocket.Conn, done chan bool) {
 	for {
 		messageType, message, err := connection.ReadMessage()
 		if err != nil {
+			done <- true
 			log.Println("Read error:", err)
 			break
 		}
 
 		err = handleIncomingMsg(message, messageType, connection)
 		if err != nil {
+			done <- true
 			log.Printf("errror when handling incoming message: %w", err)
 			return
 		}
 	}
-
-	fmt.Println("Zombie done")
-}
-
-func closeConnection(connection *websocket.Conn) {
-	func() {
-		err := connection.Close()
-		if err != nil {
-			log.Println("Error when closing connection")
-		}
-	}()
 }
 
 func handleIncomingMsg(message []byte, messageType int, connection *websocket.Conn) error {
@@ -77,7 +80,7 @@ func handleIncomingMsg(message []byte, messageType int, connection *websocket.Co
 
 func generate(connection *websocket.Conn) {
 	fmt.Println("Starting to generate...")
-	connection.WriteMessage(websocket.TextMessage, []byte("Here is a string...."))
+	//connection.WriteMessage(websocket.TextMessage, []byte("Here is a string...."))
 }
 
 func main() {
@@ -85,5 +88,33 @@ func main() {
 	flag.Parse()
 	log.SetFlags(0)
 	http.HandleFunc("/zombie", zombie)
+	//http.HandleFunc("/zombie", zombieOld)
 	log.Fatal(http.ListenAndServe(*serverAddr, nil))
 }
+
+//
+//func zombieOld(writer http.ResponseWriter, request *http.Request) {
+//	connection, err := upgrader.Upgrade(writer, request, nil)
+//	if err != nil {
+//		log.Print("upgrade:", err)
+//		return
+//	}
+//
+//	defer closeConnection(connection)
+//
+//	for {
+//		messageType, message, err := connection.ReadMessage()
+//		if err != nil {
+//			log.Println("Read error:", err)
+//			break
+//		}
+//
+//		err = handleIncomingMsg(message, messageType, connection)
+//		if err != nil {
+//			log.Printf("errror when handling incoming message: %w", err)
+//			return
+//		}
+//	}
+//
+//	fmt.Println("Zombie done")
+//}
