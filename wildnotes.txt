@@ -1,3 +1,8 @@
+NESTE GANG:
+- Har nå flyttet nettverkslogikken tilbake til main.
+  - Har nå laget fungerende generering. Kanskje litt forvirrende bruk av channels for å signalisere at server send msg feila, eller at klienten har discconecta. Men det skal funke.
+  - Neste: Faktisk lage domenelogikk, tror jeg.
+
 ------------------------------------------------------------------
 
 Arkitektur:
@@ -45,5 +50,3 @@ VURDER:
 - https://www.asyncapi.com/ - men det er ingen bra kodegenerator
 
 
-NESTE GANG:
-- Ktor + websockets er noe drit. Se om det finnes bedre, enkelt bibliotek.
