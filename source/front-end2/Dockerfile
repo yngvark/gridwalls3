@@ -13,7 +13,6 @@ COPY src ./
 RUN npm run build
 
 # Final image
-
 FROM node:$NODE_TAG
 WORKDIR /app
 
