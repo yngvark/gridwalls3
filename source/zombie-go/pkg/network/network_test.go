@@ -2,7 +2,8 @@ package network_test
 
 import (
 	"testing"
-	net "zombie-go/pkg/network"
+
+	net "github.com/yngvark/gridwalls3/source/zombie-go/pkg/network"
 
 	"github.com/stretchr/testify/assert"
 )

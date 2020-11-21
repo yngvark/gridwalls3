@@ -3,7 +3,8 @@ package worldmap_test
 import (
 	"fmt"
 	"testing"
-	"zombie-go/pkg/worldmap"
+
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/worldmap"
 
 	"github.com/stretchr/testify/assert"
 )

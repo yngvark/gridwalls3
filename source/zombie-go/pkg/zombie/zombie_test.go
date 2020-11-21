@@ -3,8 +3,9 @@ package zombie_test
 import (
 	"math/rand"
 	"testing"
-	"zombie-go/pkg/worldmap"
-	"zombie-go/pkg/zombie"
+
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/worldmap"
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/zombie"
 
 	"github.com/stretchr/testify/assert"
 )

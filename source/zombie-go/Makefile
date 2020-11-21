@@ -1,5 +1,5 @@
 SHELL         = bash
-
+IMAGE = ghcr.io/yngvark/zombie
 
 GO := $(shell command -v go 2> /dev/null)
 ifndef GO
@@ -19,3 +19,13 @@ gofumpt:
 fmt: gofumpt
 	$(GO) fmt $(PKGS)
 	$(GOFUMPT) -s -w $(FILES)
+
+build-docker:
+	docker build . -t $(IMAGE)
+
+run-docker: build-docker
+	docker run --name zombie --rm -p 8080:8080 $(IMAGE)
+
+push:
+	docker push $(IMAGE)
+

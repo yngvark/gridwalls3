@@ -6,8 +6,9 @@ import (
 	"log"
 	"math/rand"
 	"time"
-	"zombie-go/pkg/network"
-	"zombie-go/pkg/worldmap"
+
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/network"
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/worldmap"
 )
 
 type GameLogic struct {

@@ -6,16 +6,18 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"zombie-go/pkg/network"
-	"zombie-go/pkg/zombie"
+
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/network"
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/zombie"
 
 	"github.com/gorilla/websocket"
 )
 
 func main() {
-	serverAddr := flag.String("addr", "localhost:8080", "http service address")
+	port := "8080"
+	serverAddr := flag.String("addr", fmt.Sprintf("localhost:%s", port), "http service address")
 
-	fmt.Println("Running")
+	fmt.Printf("Running on port %s\n", port)
 	flag.Parse()
 	log.SetFlags(0)
 

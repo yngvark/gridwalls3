@@ -3,7 +3,8 @@ package zombie
 import (
 	"fmt"
 	"math/rand"
-	"zombie-go/pkg/worldmap"
+
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/worldmap"
 )
 
 type Zombie struct {
