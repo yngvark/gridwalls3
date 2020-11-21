@@ -1,7 +1,7 @@
 NESTE GANG:
 - Har nå flyttet nettverkslogikken tilbake til main.
   - Har nå laget fungerende generering. Kanskje litt forvirrende bruk av channels for å signalisere at server send msg feila, eller at klienten har discconecta. Men det skal funke.
-  - Neste: Faktisk lage domenelogikk, tror jeg.
+  - Neste: Faktisk lage domenelogikk, tror jeg. Og få grafikk til å vises i frontend.
 
 ------------------------------------------------------------------
 

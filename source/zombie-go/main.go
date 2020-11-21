@@ -83,8 +83,6 @@ func (h *HTTPHandler) ServeHTTP(writer http.ResponseWriter, request *http.Reques
 }
 
 func (h *HTTPHandler) CloseConnectionWhenDone(activelyCloseConnectionChannel chan bool) {
-	//<-done
-
 	select {
 	case <-h.stopGamelogicChannel:
 	case <-activelyCloseConnectionChannel:
