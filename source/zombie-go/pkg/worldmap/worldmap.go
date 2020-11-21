@@ -10,7 +10,7 @@ var Axis = struct { //nolint:gochecknoglobals
 	X AxisType
 	Y AxisType
 }{
-	X: 1,
+	X: 1, //nolint:gomnd
 	Y: 2, //nolint:gomnd
 }
 
@@ -24,8 +24,8 @@ type WorldMap struct {
 func New(maxX int, maxY int) *WorldMap {
 	return &WorldMap{
 		MinX: 0,
-		MaxX: 0,
-		MinY: maxX,
+		MaxX: maxX,
+		MinY: 0,
 		MaxY: maxY,
 	}
 }
@@ -33,18 +33,18 @@ func New(maxX int, maxY int) *WorldMap {
 func (m *WorldMap) IsInMap(axisValue int, axis AxisType) (bool, error) {
 	switch axis {
 	case Axis.X:
-		return m.XIsInMap(axisValue), nil
+		return m.xIsInMap(axisValue), nil
 	case Axis.Y:
-		return m.YIsInMap(axisValue), nil
+		return m.yIsInMap(axisValue), nil
 	default:
 		return false, fmt.Errorf("not a valid Axis type: %d", axis)
 	}
 }
 
-func (m *WorldMap) XIsInMap(x int) bool {
-	return x <= m.MaxX && x >= m.MinX
+func (m *WorldMap) xIsInMap(x int) bool {
+	return x >= m.MinX && x <= m.MaxX
 }
 
-func (m *WorldMap) YIsInMap(y int) bool {
-	return y <= m.MaxY && y >= m.MinY
+func (m *WorldMap) yIsInMap(y int) bool {
+	return y >= m.MinY && y <= m.MaxY
 }

@@ -1,8 +1,10 @@
 package zombie
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"time"
 	"zombie-go/pkg/network"
 	"zombie-go/pkg/worldmap"
@@ -11,24 +13,24 @@ import (
 type GameLogic struct {
 	msgSender            network.MessageSender
 	stopGamelogicChannel chan bool
-	generator            *generator
+	generator            *Generator
 }
 
 func NewGameLogic(s network.MessageSender, stopGamelogicChannel chan bool) *GameLogic {
-	m := worldmap.New(20, 10)     //nolint:gomnd
-	zombie := newZombie(10, 5, m) //nolint:gomnd
+	m := worldmap.New(20, 10)                                   //nolint:gomnd
+	zombie := NewZombie(10, 5, m, rand.New(rand.NewSource(45))) //nolint:gosec,gomnd
 
 	return &GameLogic{
 		msgSender:            s,
 		stopGamelogicChannel: stopGamelogicChannel,
-		generator:            newGenerator(zombie),
+		generator:            NewGenerator(zombie),
 	}
 }
 
 func (l *GameLogic) Run() {
 	fmt.Println("Starting to generate...")
 
-	ticker := time.NewTicker(time.Second * 3) //nolint:gomnd
+	ticker := time.NewTicker(time.Second * 1) //nolint:gomnd
 	defer ticker.Stop()
 
 	for {
@@ -37,15 +39,19 @@ func (l *GameLogic) Run() {
 			log.Println("Zombie generator stopped.")
 			return
 		case <-ticker.C:
-			log.Println("Sending message...")
-
-			msg, err := l.generator.next()
+			zombieMove, err := l.generator.Next()
 			if err != nil {
 				fmt.Println("could not generate next message: %w", err)
 				return
 			}
 
-			err = l.msgSender.SendMsg(msg)
+			zombieMoveJSON, err := json.Marshal(zombieMove)
+			if err != nil {
+				fmt.Println("could not marshal zombie move: %w", err)
+				return
+			}
+
+			err = l.msgSender.SendMsg(string(zombieMoveJSON))
 			if err != nil {
 				l.stopGamelogicChannel <- true
 				return
