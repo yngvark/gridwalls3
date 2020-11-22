@@ -3,9 +3,13 @@ import {MessageListener} from "./MessageListener";
 
 export class Network {
     private websocketHandler:WebsocketHandler
+    private messageListeners:MessageListener[]
 
     constructor(websocketHandler: WebsocketHandler) {
         this.websocketHandler = websocketHandler
+        this.websocketHandler.setOnMessage(this, this.onMessage)
+
+        this.messageListeners = []
     }
 
     async connect(): Promise<void> {
@@ -20,7 +24,13 @@ export class Network {
         this.websocketHandler.disconnect()
     }
 
-    addMessageListener(messageListener: MessageListener):void {
-        console.log("addMessageListener")
+    addMessageListener(m: MessageListener):void {
+        this.messageListeners.push(m)
+    }
+
+    private onMessage(e:MessageEvent): void {
+        for (const l of this.messageListeners) {
+            l.messageReceived(e.data)
+        }
     }
 }
