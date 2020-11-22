@@ -1,6 +1,6 @@
-import {Logger} from './Logger'
+import {Logger} from '../Logger'
 
-export class Network {
+export class WebsocketHandler {
     private log:Logger = Logger.create(this)
     private websocket:WebSocket
 
@@ -13,6 +13,7 @@ export class Network {
     async connect(): Promise<void> {
         this.log.debug(`Connecting to ${this.host}`)
 
+        // noinspection UnnecessaryLocalVariableJS
         const promise:Promise<void> = new Promise((resolve, reject) => {
             const websocket = new WebSocket(this.host)
 
@@ -39,6 +40,7 @@ export class Network {
 
         return promise
     }
+
 
     send(msg:string): void {
         this.log.debug("Sending", msg)

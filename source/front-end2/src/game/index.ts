@@ -1,6 +1,8 @@
 import {Game} from "./Game";
-import {Network} from "./Network";
+import {Network} from "./network/Network";
 import {Logger} from "./Logger";
+import {WebsocketHandler} from "./network/WebsocketHandler";
+import {Gui} from "./Gui";
 
 const log = Logger.create("index")
 
@@ -8,8 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("Hello from DOMContentLoaded. Running game!!!");
 
     // const network = new Network("ws://localhost:8080/myws/echo")
-    const network = new Network("ws://localhost:8080/zombie")
+    const network = new Network(new WebsocketHandler("ws://localhost:8080/zombie"))
     const game = new Game(network)
+    game.init(new Gui())
 
     document.getElementById("connectBtn").onclick = async () => {
         await game.run()
