@@ -7,3 +7,4 @@ export class ZombieMove {
         this.y = y
     }
 }
+console.log("HALLO!!")
