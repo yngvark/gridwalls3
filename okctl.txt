@@ -1,0 +1,133 @@
+A step-by-step on how you can get started with okctl from a clean start to a API
+​
+# Install
+- install okctl: https://okctl.io/
+- install `pass` unless you have this installed
+  - during the process you might get the `No secret key` message, ignore this for now
+​
+# Setup
+- create a private github repo: https://github.com/oslokommune/my-new-okctl-app
+  - this will be used to hold the infrastructure
+- cd into this in the terminal and run the following command
+- `okctl create cluster dev 123456789`
+  - `dev`: the environment you want to create: dev|prod|test|foobar
+  - `123456789`: the aws account ID where everything is set up
+- you get asked to go through setting up okctl configuration if this is the first time you run it, this will create a `~/.okctl` folder
+  - username is your oslo kommune username `aaa000000`
+- you are asked to set up the current repository as a okctl repository
+  - will write a `./.okctl.yml` file with configuration for this repo
+  - define a product name: `your-product-name`
+  - output directory: this is where all the infrastructure files will be stored
+  - okctl will download all the necessary binaries that it depends on
+    - these are saved to `~/.okctl/binaries`
+- when asked for multifactor authentication: this is as set up with your oslo kommune user (`aaa000000` above)
+​
+- if everything is ok you should now get a "Are you ready to start" message
+- a github device authentication flow will start and open a browser
+  - enter the code you get from okctl in the browser as prescribed
+  - click "authorize oslokommune"
+- choose your domain, a name will be generated based on the repo name and environment: `my-new-okctl-app-dev.oslo.systems`
+  - if you get: `X Sorry, your reply was invalid: don't know how to handle DNS response code: 2` - the domain already exists. Choose another one.
+- after a while you will get a notification about sending a message to the okctl team with nameservers, do this
+  - wait patiently here until you get a reply back that is has been done (normally this will happen quickly)
+​
+# Create resources
+- now the creation of all the resources starts
+  - get some more coffee... then some more coffee
+​
+# Setup #2
+- after everything is done, and no errors have happened, you get asked which repo to use as infrastructure repository
+  - this will list all private repos you have access to on Github
+  - choose `my-new-okctl-app`, this will be set up to connect with argocd for CI purposes
+- now everything should be set up and ready
+- add `aws-iam-authenticator` to your $PATH
+  - export PATH=$PATH:/Users/eide/.okctl/binaries/aws-iam-authenticator/0.5.1/darwin/amd64/
+​
+# ArgoCD
+- execute `kubectl get namespaces`
+  - should list `argocd` as one of the namespaces
+- `kubectl get pods --namespace=argocd`
+  - should list a set of pods for argocd
+- `okctl show credentials dev`
+  - shows all the credentials available for okctl
+- argocd is now set up on: https://argocd.my-new-okctl-app-dev.oslo.systems
+  - to log in we need a user: `okctl adduser dev my.user@gmail.com`
+  - this will create a github authentication flow in your browser
+  - check your email for a temporary password
+    - make sure you don't copy the `.` at the end of the password - that just marks the end of the sentence
+  - login to the argocd application and change the password
+  - if you are redirected to a error message that states `unknown app state XXX` - go to https://argocd.my-new-okctl-app-dev.oslo.systems - choose login and you should be redirected correctly into the application
+- until this is fixed: add yourself as admin to argocd with the following
+  - `kubectl edit configmap argocd-rbac-cm --namespace argocd`
+    - add a new line after `g, admins, role:admin`: `g, my.email@gmail.com, role:admin`
+  - https://argocd.my-new-okctl-app-dev.oslo.systems/settings/repos should now list the repo as selected earlier
+​
+# Publish a docker image
+- publish a docker image to github
+  - I have logged into github with the following recipe:
+    - create token: https://github.com/settings/tokens/new
+      - permission: "write:packages"
+      - save to "/home/eide/TOKEN.txt"
+    - login to github:
+      - `cat ~/TOKEN.txt | docker login https://docker.pkg.github.com -u MY_USERNAME_ON_GITHUB --password-stdin`
+  - I have a docker image built with the following command
+    - `docker build . -t docker.pkg.github.com/oslokommune/my-new-okctl-app/my-new-okctl-app:0.0.1`
+    - this will expose a API on port 8000 in the docker image
+  - pushed the image to github with:
+    - `docker push docker.pkg.github.com/oslokommune/my-new-okctl-app/my-new-okctl-app:0.0.1`
+​
+# Setup #3
+- create a namespace that we will use for the api
+  - `kubectl create namespace my-new-okctl-app`
+​
+​
+- create a token for argocd to be able to get your docker image
+  - https://github.com/settings/tokens
+    - create a token with note: `my-new-okctl-app-argocd`
+    - check `read:packages`
+  - note the token and run the following command:
+​
+```
+kubectl create secret docker-registry argocd-github-token \
+    --docker-server=docker.pkg.github.com \
+    --docker-username=YOUR_GITHUB_USERNAME \
+    --docker-password=TOKEN_FROM_ABOVE \
+    --docker-email=YOUR_EMAIL_ON_GITHUB \
+  --namespace=my-new-okctl-app \
+```
+​
+​
+# Create application
+- now we can create a new application
+- `okctl create application dev`
+  - creates `application.yaml` in your root folder
+  - I updated with the following
+    - name: my-new-okctl-app
+    - image: docker.pkg.github.com/oslokommune/my-new-okctl-app/my-new-okctl-app
+    - version: 0.0.1
+    - url: https://api.my-new-okctl-app-dev.oslo.systems
+    - port: 8000
+    - replicas: 3
+    - namespace: my-new-okctl-app
+    - imagePullSecret: argocd-github-token
+- create the application & argo cd resources
+  - `okctl apply application dev -f application.yaml`
+  - the folder `infrastructure/base/applications/my-new-okctl-app` is now created
+  - update the `infrastructure/base/application/my-new-okctl-app/my-new-okctl-app.yaml` file to include the `imagePullSecrets` (this is not yet automaticly created when you run apply above):
+​
+```
+  containers:
+  - image: docker.pkg.github.com/oslokommune/my-new-okctl-app/my-new-okctl-app:0.0.1
+    name: my-new-okctl-app
+  imagePullSecrets:
+  - name: argocd-github-token
+```
+- add, commit and push all the infrastructure files to your github repo
+- apply the application:
+  - `kubectl apply -f infrastructure/base/applications/my-new-okctl-app/my-new-okctl-app-application.yaml`
+  - ArgoCD should now do its thing
+​
+- see events happening in the `my-new-okctl-app` namespace: `kubectl get events -n my-new-okctl-app`
+- see all pods in the `my-new-okctl-app` namespace: `kubectl get pods -n my-new-okctl-app`
+​
+- visit: https://api.my-new-okctl-app-dev.oslo.systems/ and you should have a API ready to be consumed

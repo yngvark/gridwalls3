@@ -2,6 +2,8 @@ NESTE GANG:
 - Har nå flyttet nettverkslogikken tilbake til main.
   - Har nå laget fungerende generering. Kanskje litt forvirrende bruk av channels for å signalisere at server send msg feila, eller at klienten har discconecta. Men det skal funke.
   - Neste: Faktisk lage domenelogikk, tror jeg. Og få grafikk til å vises i frontend.
+  - Prøver å få forbanna webpack til å inkludere phazer. ser nå på phaser-project-template, det funker jo,
+    prøv å fiks front-end2 til det.
 
 ------------------------------------------------------------------
 
@@ -49,4 +51,10 @@ v3
 VURDER:
 - https://www.asyncapi.com/ - men det er ingen bra kodegenerator
 
+
+
+
+
+
+-------------------------
 
