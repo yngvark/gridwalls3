@@ -10,11 +10,7 @@ export class ZombieMoveListener implements MessageListener {
     }
 
     messageReceived(msg: string):void {
-        // const zombieMoved:ZombieMove = JSON.parse(msg);
-        const x:number = Math.floor(Math.random() * 20)
-        const y:number = Math.floor(Math.random() * 10)
-
-        const zombieMoved:ZombieMove = new ZombieMove(x, y)
+        const zombieMoved:ZombieMove = JSON.parse(msg);
         this.gui.zombieMoved(zombieMoved);
     }
 }

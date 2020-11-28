@@ -1,11 +1,11 @@
-// import { Options } from '../src/Classes/Options/Options'; // this will be your custom import
 import { expect } from 'chai';
+
 import {Network} from "../../src/network/Network";
 import {WebsocketHandler} from "../../src/network/WebsocketHandler";
 import {MessageListener} from "../../src/network/MessageListener";
 
-describe('Options tests', () => { // the tests container
-    it('checking default options', () => { // the single test
+describe('Network test', () => {
+    it('should notify listeners when message is received', () => {
         const websocketHandler = new TestWebsocketHandler()
         const network = new Network(websocketHandler as unknown as WebsocketHandler)
         const listener = new TestMessageListener()

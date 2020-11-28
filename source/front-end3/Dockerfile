@@ -5,10 +5,10 @@ FROM node:$NODE_TAG as builder
 
 WORKDIR /app
 
-COPY src/package* ./
+COPY package* ./
 RUN npm install --production
 
-COPY src ./
+COPY . .
 
 RUN npm run build
 

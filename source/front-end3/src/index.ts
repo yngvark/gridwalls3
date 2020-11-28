@@ -3,15 +3,19 @@ import {Network} from "./network/Network";
 import {Logger} from "./Logger";
 import {WebsocketHandler} from "./network/WebsocketHandler";
 import {Gui} from "./Gui";
+import {ZombieMoveListener} from "./ZombieMoveListener";
 
 const log = Logger.create("index")
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("Hello from DOMContentLoaded. Running game!!!");
+    console.log("index.ts loaded");
 
     const network = new Network(new WebsocketHandler("ws://localhost:8080/zombie"))
-    const game = new Game(network)
-    game.init(new Gui())
+    const gui = new Gui(20, 11)
+    const game = new Game(network, gui)
+    const zombieMoveListener = new ZombieMoveListener(gui)
+
+    network.addMessageListener(zombieMoveListener)
 
     document.getElementById("connectBtn").onclick = async () => {
         await game.run()

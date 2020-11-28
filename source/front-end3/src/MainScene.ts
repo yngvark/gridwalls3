@@ -5,16 +5,14 @@ export class MainScene extends Phaser.Scene {
     private cursors: any;
 
     constructor() {
-        super('MainScene');
-
-        // super({
-        //     key: "MainScene"
-        // });
+        super({
+            key: "MainScene"
+        });
     }
 
     preload(): void {
-        this.load.image("skeleton", "img/skeleton.png");
-        this.load.image("human", "img/human.png");
+        this.load.image("skeleton", "assets/skeleton.png");
+        this.load.image("human", "assets/human.png");
     }
 
     private x:integer = 100;
@@ -33,15 +31,18 @@ export class MainScene extends Phaser.Scene {
         {
             this.x -= 15;
         }
-        else if (this.cursors.right.isDown)
+
+        if (this.cursors.right.isDown)
         {
             this.x += 15;
         }
-        else if (this.cursors.up.isDown)
+
+        if (this.cursors.up.isDown)
         {
             this.y -= 15;
         }
-        else if (this.cursors.down.isDown)
+
+        if (this.cursors.down.isDown)
         {
             this.y += 15
         }

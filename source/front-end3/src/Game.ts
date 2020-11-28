@@ -4,19 +4,18 @@ import {ZombieMoveListener} from "./ZombieMoveListener";
 
 export class Game {
     private network: Network;
+    private gui: Gui;
 
-    constructor(network: Network) {
+    constructor(network: Network, gui:Gui) {
         this.network = network
-    }
-
-    init(gui:Gui) {
-        this.network.addMessageListener(new ZombieMoveListener(gui))
+        this.gui = gui
     }
 
     public async run(): Promise<void> {
-        console.log("Hello from Game 33")
+        console.log("Running Game")
         await this.network.connect()
         this.network.send("hello")
+        this.gui.run()
     }
 
     stop() {

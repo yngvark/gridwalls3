@@ -1,4 +1,4 @@
-IMAGE = ghcr.io/yngvark/gridwalls_zombie
+IMAGE = ghcr.io/yngvark/frontend
 
 .PHONY: help
 help: ## Print this menu
@@ -10,11 +10,16 @@ build-docker: ## -
 run-docker: build-docker ## -
 	docker run --name zombie-frontend --rm -p 30000:3000 $(IMAGE)
 
-push: ## -
+push: build-docker ## -
 	docker push $(IMAGE)
 
 run: ## -
 	npm run dev
 
+.PHONY: test
+test: ## -
+	npm run test
+
 watch: ## -
 	npm run watch
+

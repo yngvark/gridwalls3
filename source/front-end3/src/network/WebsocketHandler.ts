@@ -48,7 +48,7 @@ export class WebsocketHandler {
 
             websocket.onmessage = (event) => {
                 if (this.onMessage) this.onMessage.call(this.onMessageCaller, event)
-                this.log.info("Received message!", event.data)
+                // this.log.info("Received message!", event.data)
             }
         })
 
