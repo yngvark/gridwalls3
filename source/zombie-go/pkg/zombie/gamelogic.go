@@ -18,8 +18,8 @@ type GameLogic struct {
 }
 
 func NewGameLogic(s network.MessageSender, stopGamelogicChannel chan bool) *GameLogic {
-	m := worldmap.New(20, 10)                                   //nolint:gomnd
-	zombie := NewZombie(10, 5, m, rand.New(rand.NewSource(45))) //nolint:gosec,gomnd
+	m := worldmap.New(20, 10)                                        //nolint:gomnd
+	zombie := NewZombie("1", 10, 5, m, rand.New(rand.NewSource(45))) //nolint:gosec,gomnd
 
 	return &GameLogic{
 		msgSender:            s,

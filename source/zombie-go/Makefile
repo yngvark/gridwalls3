@@ -1,5 +1,5 @@
 SHELL         = bash
-IMAGE = ghcr.io/yngvark/zombie
+IMAGE = ghcr.io/yngvark/zombie-backend
 
 GO := $(shell command -v go 2> /dev/null)
 ifndef GO

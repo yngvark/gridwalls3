@@ -13,8 +13,8 @@ import (
 func TestZombie(t *testing.T) {
 	t.Run("Should move randomly", func(t *testing.T) {
 		// Given
-		m := worldmap.New(20, 10)                                     //nolint:gomnd
-		z := zombie.NewZombie(10, 5, m, rand.New(rand.NewSource(45))) //nolint:gosec,gomnd
+		m := worldmap.New(20, 10)                                          //nolint:gomnd
+		z := zombie.NewZombie("1", 10, 5, m, rand.New(rand.NewSource(45))) //nolint:gosec,gomnd
 		g := zombie.NewGenerator(z)
 
 		// When+Then

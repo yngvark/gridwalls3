@@ -8,30 +8,20 @@ import (
 )
 
 type Zombie struct {
+	Id       string
 	X        int
 	Y        int
 	WorldMap *worldmap.WorldMap
 	Rand     *rand.Rand
 }
 
-type Move struct {
-	X int
-	Y int
-}
-
-func NewZombie(x int, y int, worldMap *worldmap.WorldMap, rnd *rand.Rand) *Zombie {
+func NewZombie(id string, x int, y int, worldMap *worldmap.WorldMap, rnd *rand.Rand) *Zombie {
 	return &Zombie{
+		Id:       id,
 		X:        x,
 		Y:        y,
 		WorldMap: worldMap,
 		Rand:     rnd,
-	}
-}
-
-func NewZombieMove(x int, y int) *Move {
-	return &Move{
-		X: x,
-		Y: y,
 	}
 }
 
@@ -46,8 +36,8 @@ func (z *Zombie) move() (*Zombie, *Move, error) {
 		return nil, nil, fmt.Errorf("could not get new x coordinate: %w", err)
 	}
 
-	newZ := NewZombie(newX, newY, z.WorldMap, z.Rand)
-	move := NewZombieMove(newX, newY)
+	newZ := NewZombie(z.Id, newX, newY, z.WorldMap, z.Rand)
+	move := NewZombieMove(z.Id, newX, newY)
 
 	return newZ, move, nil
 }
