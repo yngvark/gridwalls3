@@ -8,7 +8,7 @@ build-docker: ## -
 	docker build -t $(IMAGE) .
 
 run-docker: build-docker ## -
-	docker run --name zombie-frontend --rm -p 30000:3000 $(IMAGE)
+	docker run -d --name zombie-frontend --rm -p 3001:3001 $(IMAGE)
 
 push: build-docker ## -
 	docker push $(IMAGE)

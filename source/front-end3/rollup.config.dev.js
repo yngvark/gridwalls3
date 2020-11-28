@@ -1,8 +1,8 @@
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
+import typescript from '@rollup/plugin-typescript';
 import serve from 'rollup-plugin-serve';
-import typescript from 'rollup-plugin-typescript2';
 
 export default {
 
@@ -53,7 +53,7 @@ export default {
             ignoreGlobal: true
         }),
 
-        //  See https://www.npmjs.com/package/rollup-plugin-typescript2 for config options
+        //  See https://github.com/rollup/plugins/tree/master/packages/typescript for config options
         typescript(),
 
         //  See https://www.npmjs.com/package/rollup-plugin-serve for config options

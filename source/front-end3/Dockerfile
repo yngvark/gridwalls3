@@ -6,9 +6,13 @@ FROM node:$NODE_TAG as builder
 WORKDIR /app
 
 COPY package* ./
-RUN npm install --production
+RUN npm install
 
-COPY . .
+COPY dist/ ./dist/
+COPY src/ ./src/
+RUN ls -lrt
+COPY rollup*.js ./
+COPY app.js .
 
 RUN npm run build
 
@@ -16,11 +20,13 @@ RUN npm run build
 FROM node:$NODE_TAG
 WORKDIR /app
 
-COPY src/node_modules ./node_modules
-COPY src/package* ./
-COPY src/dist ./dist
-COPY src/public ./public
+COPY package* ./
+RUN npm install --production
 
-COPY src/app.js .
+#COPY node_modules ./node_modules
+#COPY package* ./
+COPY dist ./dist
+
+COPY app.js .
 
 CMD ["node", "app.js" ]

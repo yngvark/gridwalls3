@@ -56,7 +56,8 @@ func NewHTTPHandler(network *network.Broadcaster, stopGamelogicChannel chan bool
 				return false
 			}
 
-			return len(origin) > 0 && origin[0] == "http://localhost:3000"
+			return len(origin) > 0 && (origin[0] == "http://localhost:3000" ||
+				origin[0] == "http://localhost:3001")
 		},
 		EnableCompression: true,
 	}
