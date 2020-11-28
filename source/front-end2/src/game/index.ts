@@ -28,3 +28,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 }, false);
 
+console.log('index!!')

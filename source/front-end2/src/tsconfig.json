@@ -3,17 +3,22 @@
         "target": "ESNext",
         "module": "CommonJs",
         "sourceMap": true
-    },
-    "include": [
-        "game/**/*",
-        "ts_definitions/**/*.d.ts"
-    ],
-    "exclude": [
-        "./test/",
-        "./node_modules/",
-        "./dist/"
-    ],
-    "files": [
-        "ts_definitions/phaser.d.ts"
-    ]
+
+//        "esModuleInterop": true,
+//        "allowUnreachableCode": false,
+//        "strictPropertyInitialization": false,
+//        "lib": ["dom", "es5", "esnext"]
+    }
+//    "files": [
+//        "ts_definitions/phaser.d.ts"
+//    ],
+//    "include": [
+//        "game/**/*",
+//        "ts_definitions/**/*.d.ts"
+//    ]
+//    "exclude": [
+//        "./test/",
+//        "./node_modules/",
+//        "./dist/"
+//    ]
 }
