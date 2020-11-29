@@ -2,13 +2,13 @@ import {Logger} from '../Logger'
 
 export class WebsocketHandler {
     private log:Logger = Logger.create(this)
-    private websocket:WebSocket
+    private websocket!:WebSocket | null
     private readonly host: string;
 
-    private onOpen: (event: Event) => void
-    private onError: (event: Event) => void
-    private onClose: (event: Event) => void
-    private onMessage: (event: Event) => void
+    private onOpen!: (event: Event) => void
+    private onError!: (event: Event) => void
+    private onClose!: (event: Event) => void
+    private onMessage!: (event: MessageEvent) => void
     private onMessageCaller: any;
 
     constructor(host: string) {
@@ -57,11 +57,11 @@ export class WebsocketHandler {
 
     send(msg:string): void {
         this.log.debug("Sending", msg)
-        this.websocket.send(msg)
+        this.websocket!.send(msg)
     }
 
     disconnect():void {
         this.log.info("Disconnecting")
-        this.websocket.close()
+        this.websocket!.close()
     }
 }
