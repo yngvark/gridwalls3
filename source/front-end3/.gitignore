@@ -1,3 +1,17 @@
+###
+### CUSTOM STUFF
+###
+
+dist/game.js
+dist/game.js.map
+localhost.pem
+localhost-key.pem
+.env
+
+###
+### DOWNLOADED DEFINITIONS
+###
+
 # System and IDE files
 Thumbs.db
 .DS_Store
@@ -10,9 +24,6 @@ node_modules/
 
 # Build
 /npm-debug.log
-
-dist/game.js
-dist/game.js.map
 
 # IDEA
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider

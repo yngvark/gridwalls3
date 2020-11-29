@@ -4,8 +4,14 @@ IMAGE = ghcr.io/yngvark/frontend
 help: ## Print this menu
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-init:
-	npm i -g npx
+init: generate-dotenv-file
+	@echo "If you don't have npx, run: npm i -g npx"
+
+generate-dotenv-file: ## Generate .env file template
+	@echo "BACKEND_URL=ws://localhost:8080/zombie" >> .env
+	@echo "PORT=3001" >> .env
+	@echo "CERTIFICATE_FILE= #Optional, use 'mkcert localhost' to create certificate and key file" >> .env
+	@echo "KEY_FILE= #Optional, use 'mkcert localhost' to create certificate and key file" >> .env
 
 build-docker: ## -
 	docker build -t $(IMAGE) .
