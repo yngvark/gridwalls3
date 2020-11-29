@@ -16,6 +16,8 @@
     },
     "author": "Yngvar Kristiansen",
     "dependencies": {
+        "@types/cors": "^2.8.8",
+        "cors": "^2.8.5",
         "express": "^4.17.1"
     },
     "devDependencies": {
@@ -27,6 +29,7 @@
         "@typescript-eslint/eslint-plugin": "^4.8.2",
         "@typescript-eslint/parser": "^4.8.2",
         "chai": "^4.2.0",
+        "dotenv": "^8.2.0",
         "eslint": "^7.14.0",
         "mocha": "^8.2.1",
         "phaser": "^3.24.1",
