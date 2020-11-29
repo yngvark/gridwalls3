@@ -4,8 +4,10 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/mainhelp"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/network"
 	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/zombie"
@@ -14,6 +16,17 @@ import (
 )
 
 func main() {
+	allowedCorsOrigins, err := mainhelp.GetAllowedCorsOrigins(os.LookupEnv, "ALLOWED_CORS_ORIGINS")
+	if err != nil {
+	    log.Fatalf("could get cors env: %s", err)
+	}
+
+	fmt.Println("ALLOWED_CORS_ORIGINS:")
+	for k, _ := range allowedCorsOrigins {
+		fmt.Printf("- %s\n", k)
+	}
+	fmt.Println()
+
 	port := "8080"
 	serverAddr := flag.String("addr", fmt.Sprintf("localhost:%s", port), "http service address")
 
@@ -24,7 +37,7 @@ func main() {
 	broadcaster := network.NewBroadcaster()
 	stopGamelogicChannel := make(chan bool)
 
-	httpHandler := NewHTTPHandler(broadcaster, stopGamelogicChannel)
+	httpHandler := NewHTTPHandler(allowedCorsOrigins, broadcaster, stopGamelogicChannel)
 	http.Handle("/zombie", httpHandler)
 
 	var messageSender network.MessageSender = httpHandler
@@ -43,7 +56,7 @@ type HTTPHandler struct {
 	stopGamelogicChannel chan bool
 }
 
-func NewHTTPHandler(network *network.Broadcaster, stopGamelogicChannel chan bool) *HTTPHandler {
+func NewHTTPHandler(allowedOrigins map[string]bool, network *network.Broadcaster, stopGamelogicChannel chan bool) *HTTPHandler {
 	h := &HTTPHandler{
 		network:              network,
 		stopGamelogicChannel: stopGamelogicChannel,
@@ -56,8 +69,12 @@ func NewHTTPHandler(network *network.Broadcaster, stopGamelogicChannel chan bool
 				return false
 			}
 
-			return len(origin) > 0 && (origin[0] == "http://localhost:3000" ||
-				origin[0] == "http://localhost:3001")
+			if len(origin) > 0 {
+				_, ok := allowedOrigins[origin[0]]
+				return ok
+			}
+
+			return true
 		},
 		EnableCompression: true,
 	}

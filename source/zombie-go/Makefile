@@ -28,7 +28,12 @@ build-docker: ## -
 	docker build . -t $(IMAGE)
 
 run-docker: build-docker ## -
-	docker run --name zombie-backend --rm -p 8081:8080 $(IMAGE)
+	docker run \
+		 --name zombie-backend \
+		 --rm \
+		 -e ALLOWED_CORS_ORIGINS="http://localhost:3000,https://localhost:3001"
+		 -p 8081:8080 \
+		 $(IMAGE)
 
 push: build-docker ## -
 	docker push $(IMAGE)
