@@ -54,7 +54,9 @@ export default {
         }),
 
         //  See https://www.npmjs.com/package/rollup-plugin-typescript2 for config options
-        typescript(),
+        typescript({
+            tsconfig: 'tsconfig-frontend.json'
+        }),
 
         //  See https://github.com/TrySound/rollup-plugin-terser for config options
         terser()

@@ -1,0 +1,12 @@
+// This file is used by rollup and hopefully any IDEA. It is not supposed to be used for node_server.ts, but who knows
+// if that is actually the case or not.
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "node"
+    },
+    "include": [
+        "./src/**/*.ts"
+    ]
+}

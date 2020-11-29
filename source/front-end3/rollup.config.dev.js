@@ -54,7 +54,9 @@ export default {
         }),
 
         //  See https://github.com/rollup/plugins/tree/master/packages/typescript for config options
-        typescript(),
+        typescript({
+            tsconfig: 'tsconfig-frontend.json'
+        }),
 
         //  See https://www.npmjs.com/package/rollup-plugin-serve for config options
         serve({
