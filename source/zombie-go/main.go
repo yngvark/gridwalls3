@@ -18,19 +18,14 @@ import (
 func main() {
 	allowedCorsOrigins, err := mainhelp.GetAllowedCorsOrigins(os.LookupEnv, "ALLOWED_CORS_ORIGINS")
 	if err != nil {
-	    log.Fatalf("could get cors env: %s", err)
+		log.Fatalf("could get cors env: %s", err)
 	}
 
 	fmt.Println("ALLOWED_CORS_ORIGINS:")
-	for k, _ := range allowedCorsOrigins {
+	for k := range allowedCorsOrigins {
 		fmt.Printf("- %s\n", k)
 	}
 	fmt.Println()
-
-	port := "8080"
-	serverAddr := flag.String("addr", fmt.Sprintf("localhost:%s", port), "http service address")
-
-	fmt.Printf("Running on port %s\n", port)
 	flag.Parse()
 	log.SetFlags(0)
 
@@ -40,13 +35,42 @@ func main() {
 	httpHandler := NewHTTPHandler(allowedCorsOrigins, broadcaster, stopGamelogicChannel)
 	http.Handle("/zombie", httpHandler)
 
+	http.HandleFunc("/health", func(writer http.ResponseWriter, request *http.Request) {
+		out := []byte("OK")
+		_, err := writer.Write(out)
+
+		fmt.Println("error when responding on /health: %s", err)
+	})
+
 	var messageSender network.MessageSender = httpHandler
 	gameLogic := zombie.NewGameLogic(messageSender, stopGamelogicChannel)
 
 	broadcaster.AddListener(gameLogic)
 	// gameLogic.Run(stopGamelogicChannel)
 
-	log.Fatal(http.ListenAndServe(*serverAddr, nil))
+	certFile, useCert := os.LookupEnv("CERTIFICATE_FILE")
+	keyFile, useKey := os.LookupEnv("KEY_FILE")
+
+	if useCert || useKey {
+		if !(useCert && useKey) {
+			log.Fatalf("both CERTIFICATE_FILE and KEY_FILE need to be set")
+		}
+
+		port := "8443"
+		serverAddr := flag.String("addr", fmt.Sprintf("localhost:%s", port), "http service address")
+
+		log.Println("Using TLS")
+		fmt.Printf("Running on %s\n", *serverAddr)
+
+		log.Fatal(http.ListenAndServeTLS(*serverAddr, certFile, keyFile, nil))
+	} else {
+		port := "8081"
+		serverAddr := flag.String("addr", fmt.Sprintf("localhost:%s", port), "http service address")
+
+		fmt.Printf("Running on %s\n", *serverAddr)
+
+		log.Fatal(http.ListenAndServe(*serverAddr, nil))
+	}
 }
 
 type HTTPHandler struct {
