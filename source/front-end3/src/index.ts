@@ -50,7 +50,7 @@ async function getBackendUrl():Promise<string> {
             }
         };
         // httpRequest.open('GET', 'http://localhost:3000/config', true);
-        httpRequest.open('GET', 'https://localhost:3001/config', true);
+        httpRequest.open('GET', '/config', true);
         httpRequest.send();
     })
 
