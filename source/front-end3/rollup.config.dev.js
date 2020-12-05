@@ -2,7 +2,6 @@ import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import typescript from '@rollup/plugin-typescript';
-import serve from 'rollup-plugin-serve';
 
 export default {
 
@@ -57,17 +56,5 @@ export default {
         typescript({
             tsconfig: 'tsconfig-frontend.json'
         }),
-
-        //  See https://www.npmjs.com/package/rollup-plugin-serve for config options
-        serve({
-            open: true,
-            contentBase: 'dist',
-            host: 'localhost',
-            port: 3000,
-            headers: {
-                'Access-Control-Allow-Origin': '*'
-            }
-        })
-
     ]
 };
