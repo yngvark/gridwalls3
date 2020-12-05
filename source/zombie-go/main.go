@@ -16,9 +16,14 @@ import (
 )
 
 func main() {
+	err := InitLogger()
+	if err != nil {
+	    log.Fatalf("could not get logger: %w", err)
+	}
+
 	allowedCorsOrigins, err := mainhelp.GetAllowedCorsOrigins(os.LookupEnv, "ALLOWED_CORS_ORIGINS")
 	if err != nil {
-		log.Fatalf("could get cors env: %s", err)
+		log.Fatalf("could not get cors env: %s", err)
 	}
 
 	fmt.Println("ALLOWED_CORS_ORIGINS:")
@@ -48,29 +53,41 @@ func main() {
 	broadcaster.AddListener(gameLogic)
 	// gameLogic.Run(stopGamelogicChannel)
 
+	err = listenAndServe()
+	if err != nil {
+		log.Fatal(": %w", err)
+	}
+}
+
+func listenAndServe() error {
 	certFile, useCert := os.LookupEnv("CERTIFICATE_FILE")
 	keyFile, useKey := os.LookupEnv("KEY_FILE")
 
 	if useCert || useKey {
 		if !(useCert && useKey) {
-			log.Fatalf("both CERTIFICATE_FILE and KEY_FILE need to be set")
+			return fmt.Errorf("both CERTIFICATE_FILE and KEY_FILE need to be set")
 		}
 
 		port := "8443"
 		serverAddr := flag.String("addr", fmt.Sprintf("localhost:%s", port), "http service address")
 
-		log.Println("Using TLS")
-		fmt.Printf("Running on %s\n", *serverAddr)
+		log2().Info("Using TLS")
+		log2().Infof("Running on %s\n", *serverAddr)
+		//log.Println("Using TLS")
+		//fmt.Printf("Running on %s\n", *serverAddr)
 
 		log.Fatal(http.ListenAndServeTLS(*serverAddr, certFile, keyFile, nil))
 	} else {
 		port := "8081"
 		serverAddr := flag.String("addr", fmt.Sprintf("localhost:%s", port), "http service address")
 
-		fmt.Printf("Running on %s\n", *serverAddr)
+		log2().Infof("Running on %s\n", *serverAddr)
+		//fmt.Printf("Running on %s\n", *serverAddr)
 
 		log.Fatal(http.ListenAndServe(*serverAddr, nil))
 	}
+
+	return nil
 }
 
 type HTTPHandler struct {
@@ -95,6 +112,8 @@ func NewHTTPHandler(allowedOrigins map[string]bool, network *network.Broadcaster
 
 			if len(origin) > 0 {
 				_, ok := allowedOrigins[origin[0]]
+				log.Printf("Checking origin %s. Result: %t\n", origin[0], ok)
+
 				return ok
 			}
 

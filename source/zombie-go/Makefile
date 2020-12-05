@@ -31,6 +31,9 @@ fmt: gofumpt  ## -
 build-docker: ## -
 	docker build . -t $(IMAGE)
 
+run:
+	ALLOWED_CORS_ORIGINS="http://localhost:3001" CERTIFICATE_FILE="localhost.pem" KEY_FILE="localhost-key.pem" LOG_TYPE="simple" go run main.go
+
 run-docker: build-docker ## -
 	docker run \
 		 --name zombie-backend \
