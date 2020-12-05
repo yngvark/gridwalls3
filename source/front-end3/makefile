@@ -17,7 +17,7 @@ build-docker: ## -
 	docker build -t $(IMAGE) .
 
 run-docker: build-docker ## -
-	docker run -d --name zombie-frontend --rm -p 3001:3001 $(IMAGE)
+	docker run -d --name zombie-frontend --rm -p 30010:3001 $(IMAGE)
 
 push: build-docker ## -
 	docker push $(IMAGE)
@@ -32,16 +32,9 @@ build: ## -
 	npm run build
 
 run: ## -
-	# We need a bit crazy setup to run both a server and a client:
+	# npm run watch runs rollup watch, so our bundled javascript (dist/game.js) stays up to date
 	# - npx launches the server, which hosts the app like it would in production, which uses node. It watches the server
 	# directory and automatically refreshes the server.
-	# - rollup (npm run watch) makes sure that the bundled javascript (dist/game.js) file made by rollup (js bundler)
-	# stays up to date. It watches the src folder and automatically creates a bundled dist/game.js.
-	#
-	# But wait, there's more:
-	# - npx is hosted on http://localhost:3001, or http://localhost:3001 if you have this enabled (in .env file)
-	# - rollup is hosted on http://localhost:3000. It cannot work alone, as it needs to call an endpoint /config, which
-	# is hosted by npx, to get environmental variables. Maybe I should do all this some other way.
 	npx nodemon server/node_server.ts & npm run watch
 
 .PHONY: test
