@@ -20,5 +20,5 @@ let app:express.Application = getApp(BACKEND_URL)
 let server : http.Server | https.Server = http.createServer(app)
 
 server.listen(PORT, () => {
-    console.log(`Example app listening at http://localhost:${PORT}`)
+    console.log(`Listening at http://localhost:${PORT}`)
 })
