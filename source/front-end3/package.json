@@ -8,6 +8,7 @@
         "dev": "rollup --config rollup.config.dev.js",
         "build": "rollup --config rollup.config.dist.js",
         "watch": "rollup --watch --config rollup.config.dev.js",
+        "tsc": "tsc --build tsconfig.json",
         "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -r ts-node/register 'test/**/*.ts'"
     },
     "repository": {
@@ -18,7 +19,8 @@
     "dependencies": {
         "@types/cors": "^2.8.8",
         "cors": "^2.8.5",
-        "express": "^4.17.1"
+        "express": "^4.17.1",
+        "dotenv": "^8.2.0"
     },
     "devDependencies": {
         "@rollup/plugin-replace": "^2.3.4",
@@ -29,7 +31,6 @@
         "@typescript-eslint/eslint-plugin": "^4.8.2",
         "@typescript-eslint/parser": "^4.8.2",
         "chai": "^4.2.0",
-        "dotenv": "^8.2.0",
         "eslint": "^7.14.0",
         "mocha": "^8.2.1",
         "phaser": "^3.24.1",

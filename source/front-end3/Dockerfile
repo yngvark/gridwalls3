@@ -10,11 +10,16 @@ RUN npm install
 
 COPY dist/ ./dist/
 COPY src/ ./src/
-RUN ls -lrt
+COPY ./tsconfig-frontend.json .
 COPY rollup*.js ./
-COPY app.js .
 
 RUN npm run build
+
+# Node, typescript stuff
+COPY server/ ./server/
+#COPY --chown=node ./tsconfig.json .
+COPY ./tsconfig.json .
+RUN npm run tsc
 
 # Final image
 FROM node:$NODE_TAG
@@ -25,8 +30,7 @@ RUN npm install --production
 
 #COPY node_modules ./node_modules
 #COPY package* ./
-COPY dist ./dist
+COPY dist ./dist/
+COPY --from=builder /app/server/*.js ./server/
 
-COPY app.js .
-
-CMD ["node", "app.js" ]
+CMD ["node", "server/node_server.js" ]

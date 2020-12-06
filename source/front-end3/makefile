@@ -17,7 +17,15 @@ build-docker: ## -
 	docker build -t $(IMAGE) .
 
 run-docker: build-docker ## -
-	docker run -d --name zombie-frontend --rm -p 30010:3001 $(IMAGE)
+	docker kill zombie-frontend || true
+	docker run \
+		-d \
+		-e PORT=3001 \
+		-e BACKEND_URL=ws://localhost:8080/zombie \
+		--name zombie-frontend \
+		--rm \
+		-p 30010:3001 \
+		$(IMAGE)
 
 push: build-docker ## -
 	docker push $(IMAGE)
@@ -35,7 +43,7 @@ run: ## -
 	# npm run watch runs rollup watch, so our bundled javascript (dist/game.js) stays up to date
 	# - npx launches the server, which hosts the app like it would in production, which uses node. It watches the server
 	# directory and automatically refreshes the server.
-	npx nodemon server/node_server.ts & npm run watch
+	npm run watch & npx nodemon server/node_server.ts
 
 .PHONY: test
 test: ## -
