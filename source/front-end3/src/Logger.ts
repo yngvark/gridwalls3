@@ -34,7 +34,11 @@ export class Logger {
     }
 
     debug(msg: unknown, object?: unknown): void {
-        console.debug(this.getPrefix(), msg, object)
+        if (object) {
+            console.debug(this.getPrefix(), msg, object)
+        } else {
+            console.debug(this.getPrefix(), msg)
+        }
     }
 
     private getPrefix(): string {
