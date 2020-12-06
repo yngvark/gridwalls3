@@ -32,14 +32,19 @@ build-docker: ## -
 	docker build . -t $(IMAGE)
 
 run:
-	ALLOWED_CORS_ORIGINS="http://localhost:3001" CERTIFICATE_FILE="localhost.pem" KEY_FILE="localhost-key.pem" LOG_TYPE="simple" go run main.go
+	PORT="8080" \
+		ALLOWED_CORS_ORIGINS="http://localhost:3001,http://localhost:30010" \
+		LOG_TYPE="simple" \
+		go run *.go
 
 run-docker: build-docker ## -
 	docker run \
 		 --name zombie-backend \
 		 --rm \
-		 -e ALLOWED_CORS_ORIGINS="http://localhost:3000,https://localhost:3001"
-		 -p 8081:8080 \
+		 -e PORT="8080" \
+		 -e LOG_TYPE="simple" \
+		 -e ALLOWED_CORS_ORIGINS="http://localhost:3001,http://localhost:30010" \
+		 -p 8080:8080 \
 		 $(IMAGE)
 
 push: build-docker ## -
