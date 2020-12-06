@@ -18,7 +18,7 @@ import (
 func main() {
 	err := InitLogger()
 	if err != nil {
-	    log.Fatalf("could not get logger: %w", err)
+		log.Fatalf("could not get logger: %w", err)
 	}
 
 	allowedCorsOrigins, err := mainhelp.GetAllowedCorsOrigins(os.LookupEnv, "ALLOWED_CORS_ORIGINS")
@@ -26,14 +26,27 @@ func main() {
 		log.Fatalf("could not get cors env: %s", err)
 	}
 
+	port, ok := os.LookupEnv("PORT")
+	if !ok {
+		log.Fatalf("env variable PORT is not set")
+	}
+
+	printAllowedCorsOrigins(allowedCorsOrigins)
+
+	setupGame(allowedCorsOrigins)
+
+	listenAndServe(port)
+}
+
+func printAllowedCorsOrigins(allowedCorsOrigins map[string]bool) {
 	fmt.Println("ALLOWED_CORS_ORIGINS:")
 	for k := range allowedCorsOrigins {
 		fmt.Printf("- %s\n", k)
 	}
 	fmt.Println()
-	flag.Parse()
-	log.SetFlags(0)
+}
 
+func setupGame(allowedCorsOrigins map[string]bool) {
 	broadcaster := network.NewBroadcaster()
 	stopGamelogicChannel := make(chan bool)
 
@@ -51,43 +64,12 @@ func main() {
 	gameLogic := zombie.NewGameLogic(messageSender, stopGamelogicChannel)
 
 	broadcaster.AddListener(gameLogic)
-	// gameLogic.Run(stopGamelogicChannel)
-
-	err = listenAndServe()
-	if err != nil {
-		log.Fatal(": %w", err)
-	}
 }
 
-func listenAndServe() error {
-	certFile, useCert := os.LookupEnv("CERTIFICATE_FILE")
-	keyFile, useKey := os.LookupEnv("KEY_FILE")
-
-	if useCert || useKey {
-		if !(useCert && useKey) {
-			return fmt.Errorf("both CERTIFICATE_FILE and KEY_FILE need to be set")
-		}
-
-		port := "8443"
-		serverAddr := flag.String("addr", fmt.Sprintf("localhost:%s", port), "http service address")
-
-		log2().Info("Using TLS")
-		log2().Infof("Running on %s\n", *serverAddr)
-		//log.Println("Using TLS")
-		//fmt.Printf("Running on %s\n", *serverAddr)
-
-		log.Fatal(http.ListenAndServeTLS(*serverAddr, certFile, keyFile, nil))
-	} else {
-		port := "8081"
-		serverAddr := flag.String("addr", fmt.Sprintf("localhost:%s", port), "http service address")
-
-		log2().Infof("Running on %s\n", *serverAddr)
-		//fmt.Printf("Running on %s\n", *serverAddr)
-
-		log.Fatal(http.ListenAndServe(*serverAddr, nil))
-	}
-
-	return nil
+func listenAndServe(port string) {
+	serverAddr := flag.String("addr", fmt.Sprintf(":%s", port), "http service address")
+	log2().Infof("Running on %s\n", *serverAddr)
+	log.Fatal(http.ListenAndServe(*serverAddr, nil))
 }
 
 type HTTPHandler struct {
