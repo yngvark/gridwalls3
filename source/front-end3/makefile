@@ -9,7 +9,7 @@ init: generate-dotenv-file
 
 generate-dotenv-file: ## Generate .env file template
 	@echo "BACKEND_URL=ws://localhost:8080/zombie" >> .env
-	@echo "PORT=3001" >> .env
+	@echo "PORT=3000" >> .env
 	@echo "CERTIFICATE_FILE= #Optional, use 'mkcert localhost' to create certificate and key file" >> .env
 	@echo "KEY_FILE= #Optional, use 'mkcert localhost' to create certificate and key file" >> .env
 
@@ -20,11 +20,11 @@ run-docker: build-docker ## -
 	docker kill zombie-frontend || true
 	docker run \
 		-d \
-		-e PORT=3001 \
+		-e PORT=3000 \
 		-e BACKEND_URL=ws://localhost:8080/zombie \
 		--name zombie-frontend \
 		--rm \
-		-p 30010:3001 \
+		-p 30000:3000 \
 		$(IMAGE)
 
 push: build-docker ## -

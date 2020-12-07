@@ -33,9 +33,9 @@ build-docker: ## -
 
 run:
 	PORT="8080" \
-		ALLOWED_CORS_ORIGINS="http://localhost:3001,http://localhost:30010" \
-		LOG_TYPE="simple" \
-		go run *.go
+	ALLOWED_CORS_ORIGINS="http://localhost:3000,http://localhost:3001,http://localhost:30010" \
+	LOG_TYPE="simple" \
+	go run *.go
 
 run-docker: build-docker ## -
 	docker run \
