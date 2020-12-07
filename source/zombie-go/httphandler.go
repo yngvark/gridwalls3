@@ -11,14 +11,14 @@ import (
 
 type HTTPHandler struct {
 	upgrader             *websocket.Upgrader
-	network              *network.Broadcaster
 	connection           *websocket.Conn
+	broadcaster          *network.Broadcaster
 	stopGamelogicChannel chan bool
 }
 
-func NewHTTPHandler(allowedOrigins map[string]bool, network *network.Broadcaster, stopGamelogicChannel chan bool) *HTTPHandler {
+func NewHTTPHandler(allowedOrigins map[string]bool, broadcaster *network.Broadcaster, stopGamelogicChannel chan bool) *HTTPHandler {
 	h := &HTTPHandler{
-		network:              network,
+		broadcaster:          broadcaster,
 		stopGamelogicChannel: stopGamelogicChannel,
 	}
 
@@ -64,10 +64,10 @@ func (h *HTTPHandler) ServeHTTP(writer http.ResponseWriter, request *http.Reques
 	go h.ReadIncomingMessages(activelyCloseConnectionChannel)
 }
 
-func (h *HTTPHandler) CloseConnectionWhenDone(activelyCloseConnectionChannel chan bool) {
+func (h *HTTPHandler) CloseConnectionWhenDone(closeConnectionChannel chan bool) {
 	select {
 	case <-h.stopGamelogicChannel:
-	case <-activelyCloseConnectionChannel:
+	case <-closeConnectionChannel:
 	}
 
 	fmt.Println("Closing connection from server")
@@ -81,7 +81,7 @@ func (h *HTTPHandler) CloseConnectionWhenDone(activelyCloseConnectionChannel cha
 	}
 }
 
-func (h *HTTPHandler) ReadIncomingMessages(activelyCloseConnectionChannel chan bool) {
+func (h *HTTPHandler) ReadIncomingMessages(closeConnectionChannel chan bool) {
 	for {
 		log.Println("Reading next message...")
 
@@ -92,7 +92,7 @@ func (h *HTTPHandler) ReadIncomingMessages(activelyCloseConnectionChannel chan b
 
 			// We need to stop both game logic and disconnect
 			h.stopGamelogicChannel <- true
-			activelyCloseConnectionChannel <- true
+			closeConnectionChannel <- true
 
 			log.Println("Read error:", err)
 
@@ -106,7 +106,7 @@ func (h *HTTPHandler) ReadIncomingMessages(activelyCloseConnectionChannel chan b
 func (h *HTTPHandler) HandleIncomingMsg(message []byte) {
 	log.Printf("Received: %s", message)
 	msgString := string(message)
-	h.network.NotifyListeneres(msgString)
+	h.broadcaster.NotifyListeneres(msgString)
 }
 
 func (h *HTTPHandler) SendMsg(msg string) error {

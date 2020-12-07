@@ -17,12 +17,12 @@ type GameLogic struct {
 	generator            *Generator
 }
 
-func NewGameLogic(s network.MessageSender, stopGamelogicChannel chan bool) *GameLogic {
+func NewGameLogic(messageSender network.MessageSender, stopGamelogicChannel chan bool) *GameLogic {
 	m := worldmap.New(20, 10)                                        //nolint:gomnd
 	zombie := NewZombie("1", 10, 5, m, rand.New(rand.NewSource(45))) //nolint:gosec,gomnd
 
 	return &GameLogic{
-		msgSender:            s,
+		msgSender:            messageSender,
 		stopGamelogicChannel: stopGamelogicChannel,
 		generator:            NewGenerator(zombie),
 	}
