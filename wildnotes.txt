@@ -4,8 +4,12 @@ NESTE GANG:
   [x] Neste: Faktisk lage domenelogikk, tror jeg. Og få grafikk til å vises i frontend.
   [x] Prøver å få forbanna webpack til å inkludere phazer. ser nå på phaser-project-template, det funker jo,
     prøv å fiks front-end2 til det.
-  [ ] Fiks TLS på zombie-go, https://golang.org/pkg/net/http/ listenandserve TLS
-  [ ] Fyr opp hele appen i okctl
+  [x] Fiks TLS på zombie-go, https://golang.org/pkg/net/http/ listenandserve TLS
+  [x] Vurder å fjern TLS på zombie-go lokalt, trenger vel ikke egentlig det (i motsetning til gatekeeper).
+  Øker kompleksitet.
+  [x] Fyr opp hele appen i okctl
+  [ ] Fiks så zombie-go takler mange klienter
+
 
 ------------------------------------------------------------------
 
