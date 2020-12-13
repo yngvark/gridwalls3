@@ -8,6 +8,8 @@ NESTE GANG:
   [x] Vurder å fjern TLS på zombie-go lokalt, trenger vel ikke egentlig det (i motsetning til gatekeeper).
   Øker kompleksitet.
   [x] Fyr opp hele appen i okctl
+  [ ] Få inn zap scan
+    https://oslokommune.slack.com/archives/C01H0P1FKJ4/p1607501469029000
   [ ] Fiks så zombie-go takler mange klienter
 
 

@@ -1,12 +1,13 @@
-package main
+package mainhelp
 
 import (
 	"errors"
 	"fmt"
+	"go.uber.org/zap"
+	"net/http"
+
 	"github.com/gorilla/websocket"
 	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/network"
-	"log"
-	"net/http"
 )
 
 type HTTPHandler struct {
@@ -14,10 +15,12 @@ type HTTPHandler struct {
 	connection           *websocket.Conn
 	broadcaster          *network.Broadcaster
 	stopGamelogicChannel chan bool
+	log                  *zap.SugaredLogger
 }
 
-func NewHTTPHandler(allowedOrigins map[string]bool, broadcaster *network.Broadcaster, stopGamelogicChannel chan bool) *HTTPHandler {
+func NewHTTPHandler(logger *zap.SugaredLogger, allowedOrigins map[string]bool, broadcaster *network.Broadcaster, stopGamelogicChannel chan bool) *HTTPHandler {
 	h := &HTTPHandler{
+		log:                  logger,
 		broadcaster:          broadcaster,
 		stopGamelogicChannel: stopGamelogicChannel,
 	}
@@ -31,7 +34,7 @@ func NewHTTPHandler(allowedOrigins map[string]bool, broadcaster *network.Broadca
 
 			if len(origin) > 0 {
 				_, ok := allowedOrigins[origin[0]]
-				log.Printf("Checking origin %s. Result: %t\n", origin[0], ok)
+				h.log.Infow("Checking origin %s. Result: %t\n", origin[0], ok)
 
 				return ok
 			}
@@ -47,14 +50,14 @@ func NewHTTPHandler(allowedOrigins map[string]bool, broadcaster *network.Broadca
 func (h *HTTPHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	connection, err := h.upgrader.Upgrade(writer, request, nil)
 	if err != nil {
-		log.Print("upgrade:", err)
+		h.log.Error("could not upgrade:", err)
 		return
 	}
 
 	// This only support one client.
 	h.connection = connection
 
-	log.Println("Client connected!")
+	h.log.Info("Client connected!")
 
 	// Handle disconnection
 	activelyCloseConnectionChannel := make(chan bool)
@@ -70,31 +73,31 @@ func (h *HTTPHandler) CloseConnectionWhenDone(closeConnectionChannel chan bool) 
 	case <-closeConnectionChannel:
 	}
 
-	fmt.Println("Closing connection from server")
+	h.log.Info("Closing connection from server")
 
 	err := h.connection.Close()
 
 	if err != nil {
-		log.Println("error when closing connection: %w", err)
+		h.log.Info("error when closing connection: %w", err)
 	} else {
-		log.Println("Connection closed successfully.")
+		h.log.Info("Connection closed successfully.")
 	}
 }
 
 func (h *HTTPHandler) ReadIncomingMessages(closeConnectionChannel chan bool) {
 	for {
-		log.Println("Reading next message...")
+		h.log.Info("Reading next message...")
 
 		_, message, err := h.connection.ReadMessage()
 		if err != nil {
 			// Client disconnected
-			fmt.Println("Client disconnected")
+			h.log.Info("Client disconnected")
 
 			// We need to stop both game logic and disconnect
 			h.stopGamelogicChannel <- true
 			closeConnectionChannel <- true
 
-			log.Println("Read error:", err)
+			h.log.Errorf("Read error: %w")
 
 			break
 		}
@@ -104,7 +107,7 @@ func (h *HTTPHandler) ReadIncomingMessages(closeConnectionChannel chan bool) {
 }
 
 func (h *HTTPHandler) HandleIncomingMsg(message []byte) {
-	log.Printf("Received: %s", message)
+	h.log.Infof("Received: %s", message)
 	msgString := string(message)
 	h.broadcaster.NotifyListeneres(msgString)
 }
@@ -114,12 +117,11 @@ func (h *HTTPHandler) SendMsg(msg string) error {
 		return errors.New("could not send message, not connected")
 	}
 
-	log.Printf("Sending msg: %s", msg)
+	h.log.Infof("Sending msg: %s", msg)
 
 	err := h.connection.WriteMessage(websocket.TextMessage, []byte(msg))
 	if err != nil {
-		log.Println("write:", err)
-		return err
+		return fmt.Errorf("could not write message: %w", err)
 	}
 
 	return nil
