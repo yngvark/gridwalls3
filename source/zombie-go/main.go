@@ -15,9 +15,9 @@ func main() {
 		log.Fatal(fmt.Errorf("could not get logger: %w\n", err))
 	}
 
-	h := mainhelp.New(logger)
+	m := mainhelp.New(logger)
 
-	allowedCorsOrigins, err := h.GetAllowedCorsOrigins(os.LookupEnv, "ALLOWED_CORS_ORIGINS")
+	allowedCorsOrigins, err := m.GetAllowedCorsOrigins(os.LookupEnv, "ALLOWED_CORS_ORIGINS")
 	if err != nil {
 		logger.Fatalf("could not get cors env: %s", err)
 	}
@@ -27,7 +27,7 @@ func main() {
 		logger.Fatalf("env variable PORT is not set")
 	}
 
-	h.PrintAllowedCorsOrigins(allowedCorsOrigins)
-	h.SetupGame(allowedCorsOrigins)
-	h.ListenAndServe(port, logger)
+	m.PrintAllowedCorsOrigins(allowedCorsOrigins)
+	m.SetupGame(allowedCorsOrigins)
+	m.HttpListen(port, logger)
 }

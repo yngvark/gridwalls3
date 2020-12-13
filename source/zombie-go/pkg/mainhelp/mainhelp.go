@@ -33,7 +33,7 @@ func (m *mainHelp) SetupGame(allowedCorsOrigins map[string]bool) {
 	broadcaster.AddListener(gameLogic)
 }
 
-func (m *mainHelp) ListenAndServe(port string, lg *zap.SugaredLogger) {
+func (m *mainHelp) HttpListen(port string, lg *zap.SugaredLogger) {
 	http.HandleFunc("/health", func(writer http.ResponseWriter, request *http.Request) {
 		out := []byte("OK")
 		_, err := writer.Write(out)
@@ -45,5 +45,6 @@ func (m *mainHelp) ListenAndServe(port string, lg *zap.SugaredLogger) {
 
 	serverAddr := flag.String("addr", fmt.Sprintf(":%s", port), "http service address")
 	lg.Infof("Running on %s\n", *serverAddr)
+
 	log.Fatal(http.ListenAndServe(*serverAddr, nil))
 }
