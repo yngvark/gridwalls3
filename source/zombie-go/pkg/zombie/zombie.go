@@ -25,7 +25,7 @@ func NewZombie(id string, x int, y int, worldMap *worldmap.WorldMap, rnd *rand.R
 	}
 }
 
-func (z *Zombie) move() (*Zombie, *Move, error) {
+func (z *Zombie) Move() (*Zombie, *Move, error) {
 	newX, err := z.getNewCoordPart(z.X, worldmap.Axis.X)
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not get new x coordinate: %w", err)

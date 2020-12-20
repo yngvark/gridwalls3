@@ -1,23 +1,23 @@
-package network_test
+package pubsub_test
 
 import (
 	"testing"
 
-	net "github.com/yngvark/gridwalls3/source/zombie-go/pkg/network"
+	net "github.com/yngvark/gridwalls3/source/zombie-go/pkg/pubsub"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNetwork(t *testing.T) {
+func TestPubSub(t *testing.T) {
 	t.Run("Should send message to listeners", func(t *testing.T) {
 		// Given
-		network := net.NewBroadcaster()
+		b := net.NewBroker()
 		testReceiver := &testReceiver{}
 
-		network.AddListener(testReceiver)
+		b.Subscribe(testReceiver)
 
 		// When
-		network.NotifyListeneres("YO")
+		b.SendMsg("YO")
 
 		// Then
 		assert.Equal(t, "YO", testReceiver.lastMsgReceived)
@@ -28,6 +28,6 @@ type testReceiver struct {
 	lastMsgReceived string
 }
 
-func (t *testReceiver) NotifyListeneres(msg string) {
+func (t *testReceiver) MsgReceived(msg string) {
 	t.lastMsgReceived = msg
 }

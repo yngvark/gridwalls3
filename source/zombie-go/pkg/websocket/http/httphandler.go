@@ -1,4 +1,4 @@
-package mainhelp
+package http
 
 import (
 	"errors"
@@ -7,21 +7,21 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/network"
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/pubsub"
 )
 
 type HTTPHandler struct {
 	upgrader             *websocket.Upgrader
 	connection           *websocket.Conn
-	broadcaster          *network.Broadcaster
+	publisher            pubsub.Publisher
 	stopGamelogicChannel chan bool
 	log                  *zap.SugaredLogger
 }
 
-func NewHTTPHandler(logger *zap.SugaredLogger, allowedOrigins map[string]bool, broadcaster *network.Broadcaster, stopGamelogicChannel chan bool) *HTTPHandler {
+func NewHTTPHandler(logger *zap.SugaredLogger, allowedOrigins map[string]bool, publisher pubsub.Publisher, stopGamelogicChannel chan bool) *HTTPHandler {
 	h := &HTTPHandler{
 		log:                  logger,
-		broadcaster:          broadcaster,
+		publisher:            publisher,
 		stopGamelogicChannel: stopGamelogicChannel,
 	}
 
@@ -109,7 +109,7 @@ func (h *HTTPHandler) ReadIncomingMessages(closeConnectionChannel chan bool) {
 func (h *HTTPHandler) HandleIncomingMsg(message []byte) {
 	h.log.Infof("Received: %s", message)
 	msgString := string(message)
-	h.broadcaster.NotifyListeneres(msgString)
+	h.publisher.SendMsg(msgString)
 }
 
 func (h *HTTPHandler) SendMsg(msg string) error {

@@ -1,6 +1,7 @@
 package zombie_test
 
 import (
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/gamelogic"
 	"math/rand"
 	"testing"
 
@@ -15,7 +16,7 @@ func TestZombie(t *testing.T) {
 		// Given
 		m := worldmap.New(20, 10)                                          //nolint:gomnd
 		z := zombie.NewZombie("1", 10, 5, m, rand.New(rand.NewSource(45))) //nolint:gosec,gomnd
-		generator := zombie.NewGenerator(z)
+		generator := gamelogic.NewGenerator(z)
 
 		// When+Then
 		assertNextPosition(t, generator, 9, 5)
@@ -26,7 +27,7 @@ func TestZombie(t *testing.T) {
 	})
 }
 
-func assertNextPosition(t *testing.T, generator *zombie.Generator, x int, y int) {
+func assertNextPosition(t *testing.T, generator *gamelogic.Generator, x int, y int) {
 	move, err := generator.Next()
 	assert.Nil(t, err)
 	assert.Equal(t, zombie.NewZombieMove("1", x, y), move)

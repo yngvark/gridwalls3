@@ -1,11 +1,11 @@
-package mainhelp_test
+package websocket_test
 
 import (
 	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/log2"
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/websocket/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/mainhelp"
 )
 
 func TestOslookup(t *testing.T) {
@@ -14,7 +14,7 @@ func TestOslookup(t *testing.T) {
 		lg, err := log2.New()
 		assert.Nil(t, err)
 
-		m := mainhelp.New(lg)
+		m := http.New(lg)
 		allowed, err := m.GetAllowedCorsOrigins(osLookupEnv, "TEST_ENV")
 		assert.Nil(t, err)
 

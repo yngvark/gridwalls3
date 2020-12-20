@@ -1,29 +1,34 @@
-package zombie
+package gamelogic
 
 import (
 	"encoding/json"
+	zombie2 "github.com/yngvark/gridwalls3/source/zombie-go/pkg/zombie"
 	"go.uber.org/zap"
 	"math/rand"
 	"time"
 
-	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/network"
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/pubsub"
 	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/worldmap"
 )
 
 type GameLogic struct {
 	log                  *zap.SugaredLogger
-	msgSender            network.MessageSender
+	publisher            pubsub.Publisher
 	stopGamelogicChannel chan bool
 	generator            *Generator
 }
 
-func NewGameLogic(logger *zap.SugaredLogger, messageSender network.MessageSender, stopGamelogicChannel chan bool) *GameLogic {
-	m := worldmap.New(20, 10)                                        //nolint:gomnd
-	zombie := NewZombie("1", 10, 5, m, rand.New(rand.NewSource(45))) //nolint:gosec,gomnd
+func NewGameLogic(
+	logger *zap.SugaredLogger,
+	publisher pubsub.Publisher,
+	stopGamelogicChannel chan bool,
+) *GameLogic {
+	m := worldmap.New(20, 10)                                                //nolint:gomnd
+	zombie := zombie2.NewZombie("1", 10, 5, m, rand.New(rand.NewSource(45))) //nolint:gosec,gomnd
 
 	return &GameLogic{
 		log:                  logger,
-		msgSender:            messageSender,
+		publisher:            publisher,
 		stopGamelogicChannel: stopGamelogicChannel,
 		generator:            NewGenerator(zombie),
 	}
@@ -53,7 +58,7 @@ func (l *GameLogic) Run() {
 				return
 			}
 
-			err = l.msgSender.SendMsg(string(zombieMoveJSON))
+			err = l.publisher.SendMsg(string(zombieMoveJSON))
 			if err != nil {
 				l.stopGamelogicChannel <- true
 				return
@@ -62,7 +67,7 @@ func (l *GameLogic) Run() {
 	}
 }
 
-func (l *GameLogic) NotifyListeneres(msg string) {
+func (l *GameLogic) MsgReceived(msg string) {
 	l.log.Info("Gamelogic received msg: %s\n", msg)
 
 	if msg == "start" {

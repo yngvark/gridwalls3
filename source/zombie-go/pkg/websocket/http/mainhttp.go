@@ -1,10 +1,10 @@
-package mainhelp
+package http
 
 import (
 	"flag"
 	"fmt"
-	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/network"
-	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/zombie"
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/gamelogic"
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/pubsub"
 	"go.uber.org/zap"
 	"log"
 	"net/http"
@@ -21,16 +21,17 @@ func New(logger *zap.SugaredLogger) *mainHelp {
 }
 
 func (m *mainHelp) SetupGame(allowedCorsOrigins map[string]bool) {
-	broadcaster := network.NewBroadcaster()
+	broker := pubsub.NewBroker()
 	stopGamelogicChannel := make(chan bool)
 
-	httpHandler := NewHTTPHandler(m.log, allowedCorsOrigins, broadcaster, stopGamelogicChannel)
+	var publisher pubsub.Publisher = broker
+	httpHandler := NewHTTPHandler(m.log, allowedCorsOrigins, publisher, stopGamelogicChannel)
 	http.Handle("/zombie", httpHandler)
 
-	var messageSender network.MessageSender = httpHandler
-	gameLogic := zombie.NewGameLogic(m.log, messageSender, stopGamelogicChannel)
+	var messageSender pubsub.Publisher = httpHandler
+	gameLogic := gamelogic.NewGameLogic(m.log, messageSender, stopGamelogicChannel)
 
-	broadcaster.AddListener(gameLogic)
+	broker.Subscribe(gameLogic)
 }
 
 func (m *mainHelp) HttpListen(port string, lg *zap.SugaredLogger) {
