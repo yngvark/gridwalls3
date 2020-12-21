@@ -4,28 +4,20 @@ import (
 	"context"
 	"fmt"
 	"github.com/apache/pulsar-client-go/pulsar"
+	"github.com/yngvark/gridwalls3/source/zombie-go/pkg/pubsub"
 	"go.uber.org/zap"
 	"time"
 )
 
 type PulsarPublisher struct {
-	log *zap.SugaredLogger
-	ctx context.Context
-	client pulsar.Client
+	log      *zap.SugaredLogger
+	ctx      context.Context
+	cancelFn context.CancelFunc
+	client   pulsar.Client
 	producer pulsar.Producer
 }
 
-func NewPulsarPublisher(logger *zap.SugaredLogger, ctx context.Context) (*PulsarPublisher, error) {
-	p := &PulsarPublisher{
-		log: logger,
-		ctx: ctx,
-	}
-
-	err := p.init()
-	return p, err
-}
-
-func (m *PulsarPublisher) init() error {
+func NewPublisher(logger *zap.SugaredLogger, ctx context.Context, cancelFn context.CancelFunc, topic string) (pubsub.Publisher, error) {
 	// Create client
 	client, err := pulsar.NewClient(pulsar.ClientOptions{
 		URL:               "pulsar://localhost:36650",
@@ -34,22 +26,27 @@ func (m *PulsarPublisher) init() error {
 	})
 
 	if err != nil {
-	    return fmt.Errorf("could not instantiate Pulsar client: %w", err)
+		return nil, fmt.Errorf("could not instantiate Pulsar client: %w", err)
 	}
 
-	m.client = client
-
+	// Create producer
 	producer, err := client.CreateProducer(pulsar.ProducerOptions{
-		Topic: "zombie",
+		Topic: topic,
 	})
 
 	if err != nil {
-	   return fmt.Errorf("could not create producer: %w", err)
+		return nil, fmt.Errorf("could not create producer: %w", err)
 	}
 
-	m.producer = producer
+	p := &PulsarPublisher{
+		log:      logger,
+		ctx:      ctx,
+		cancelFn: cancelFn,
+		client:   client,
+		producer: producer,
+	}
 
-	return nil
+	return p, nil
 }
 
 func (m *PulsarPublisher) SendMsg(msg string) error {
@@ -58,6 +55,7 @@ func (m *PulsarPublisher) SendMsg(msg string) error {
 	})
 
 	if err != nil {
+		m.cancelFn()
 		return fmt.Errorf("failed to send message: %w", err)
 	}
 
@@ -65,6 +63,7 @@ func (m *PulsarPublisher) SendMsg(msg string) error {
 }
 
 func (m *PulsarPublisher) Close() {
+	m.log.Info("Closing pulsar publisher")
 	m.producer.Close()
 	m.client.Close()
 }

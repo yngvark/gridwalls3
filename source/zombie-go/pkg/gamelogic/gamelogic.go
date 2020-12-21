@@ -1,6 +1,7 @@
 package gamelogic
 
 import (
+	"context"
 	"encoding/json"
 	zombie2 "github.com/yngvark/gridwalls3/source/zombie-go/pkg/zombie"
 	"go.uber.org/zap"
@@ -12,28 +13,25 @@ import (
 )
 
 type GameLogic struct {
-	log                  *zap.SugaredLogger
-	publisher            pubsub.Publisher
-	stopGamelogicChannel chan bool
-	generator            *Generator
+	log       *zap.SugaredLogger
+	publisher pubsub.Publisher
+	ctx       context.Context
+	generator *Generator
 }
 
-func NewGameLogic(
-	logger *zap.SugaredLogger,
-	publisher pubsub.Publisher,
-	stopGamelogicChannel chan bool,
-) *GameLogic {
+func NewGameLogic(logger *zap.SugaredLogger, publisher pubsub.Publisher, ctx context.Context) *GameLogic {
 	m := worldmap.New(20, 10)                                                //nolint:gomnd
 	zombie := zombie2.NewZombie("1", 10, 5, m, rand.New(rand.NewSource(45))) //nolint:gosec,gomnd
 
 	return &GameLogic{
-		log:                  logger,
-		publisher:            publisher,
-		stopGamelogicChannel: stopGamelogicChannel,
-		generator:            NewGenerator(zombie),
+		log:       logger,
+		publisher: publisher,
+		ctx:       ctx,
+		generator: NewGenerator(zombie),
 	}
 }
 
+// Run continously publishes messages with game logic events. It blocks until signalled to stop.
 func (l *GameLogic) Run() {
 	l.log.Info("Starting to generate...")
 
@@ -42,7 +40,7 @@ func (l *GameLogic) Run() {
 
 	for {
 		select {
-		case <-l.stopGamelogicChannel:
+		case <-l.ctx.Done():
 			l.log.Info("Zombie generator stopped.")
 			return
 		case <-ticker.C:
@@ -60,17 +58,9 @@ func (l *GameLogic) Run() {
 
 			err = l.publisher.SendMsg(string(zombieMoveJSON))
 			if err != nil {
-				l.stopGamelogicChannel <- true
+				l.log.Error("-- WE SHOULD NEVER SEE THIS I THINK, PUBLISHER FAILED AND SHOULD CANCEL THE CONTEXT")
 				return
 			}
 		}
-	}
-}
-
-func (l *GameLogic) MsgReceived(msg string) {
-	l.log.Info("Gamelogic received msg: %s\n", msg)
-
-	if msg == "start" {
-		go l.Run()
 	}
 }

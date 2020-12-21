@@ -8,10 +8,16 @@ NESTE GANG:
   [x] Vurder å fjern TLS på zombie-go lokalt, trenger vel ikke egentlig det (i motsetning til gatekeeper).
   Øker kompleksitet.
   [x] Fyr opp hele appen i okctl
+  [x] Få inn pulsar
+    [x] fått opp pulsar i backend
+      ELLER HAR jeg.. det står på https://pulsar.apache.org/docs/en/deploy-docker/ at det er et annet dockerimage enn det jeg bruker
+      og vet ikke om jeg har websocket enablet, står at det må enables på https://pulsar.apache.org/docs/en/client-libraries-websocket/.
+        men vet ikke åssen jeg konfer pulsar i docker engang
+    [ ] koble til pulsar med websocket-frontend biblioteket
+  [ ] Del opp inn i separate repos
   [ ] Få inn zap scan
     https://oslokommune.slack.com/archives/C01H0P1FKJ4/p1607501469029000
-  [ ] Fiks så zombie-go takler mange klienter
-
+  [ ] Fiks autodeploy, mulig argo gjør det allerede
 
 ------------------------------------------------------------------
 
