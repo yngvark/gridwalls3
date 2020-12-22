@@ -14,6 +14,8 @@ NESTE GANG:
       og vet ikke om jeg har websocket enablet, står at det må enables på https://pulsar.apache.org/docs/en/client-libraries-websocket/.
         men vet ikke åssen jeg konfer pulsar i docker engang
     [ ] koble til pulsar med websocket-frontend biblioteket
+      [ ] Frontend kan ikke sende til zombie, den må kun lese fra zombie
+      [ ] Frontend må sende "start" til gameinit topicen
   [ ] Del opp inn i separate repos
   [ ] Få inn zap scan
     https://oslokommune.slack.com/archives/C01H0P1FKJ4/p1607501469029000
