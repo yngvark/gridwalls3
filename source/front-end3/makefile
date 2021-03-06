@@ -27,7 +27,7 @@ run-docker: build-docker ## -
 		-p 30000:3000 \
 		$(IMAGE)
 
-push: build-docker ## -
+push: build-docker ## -\
 	docker push $(IMAGE)
 
 run-watch: ## -
@@ -48,7 +48,3 @@ run: ## -
 .PHONY: test
 test: ## -
 	npm run test
-
-watch: ## -
-	npm run watch
-
