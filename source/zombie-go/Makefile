@@ -40,7 +40,7 @@ lint: golangcilint ## -
 build-docker: ## -
 	docker build . -t $(IMAGE)
 
-run:
+run: ##-
 	PORT="8080" \
 	ALLOWED_CORS_ORIGINS="http://localhost:3000,http://localhost:3001,http://localhost:30010" \
 	LOG_TYPE="simple" \
@@ -59,10 +59,13 @@ run-docker: build-docker ## -
 push: build-docker ## -
 	docker push $(IMAGE)
 
-up:
+up: ## docker-compose up -d with logs
 	(docker-compose down || true) && \
 	docker-compose up -d && \
 	docker logs -f zombie-go_standalone_1
+
+down: ## docker-compose down
+	docker-compose down
 
 ws-edit: ## - Edit websocket config
 	docker run -it -v zombie-go_pulsarconf:/pconf yngvark/linuxtools vim /pconf/websocket.conf
