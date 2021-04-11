@@ -1,0 +1,46 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: echo-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # cert-manager.io/cluster-issuer: "letsencrypt-staging"
+spec:
+  tls:
+  - hosts:
+    - echo1.yngvark.com
+    - echo4.k8s.yngvark.com
+    secretName: echo-tls
+  rules:
+  - host: echo1.yngvark.com
+    http:
+      paths:
+      - backend:
+          serviceName: echo1
+          servicePort: 80
+  - host: echo4.k8s.yngvark.com
+    http:
+      paths:
+      - backend:
+          serviceName: echo2
+          servicePort: 80
+#---
+#apiVersion: networking.k8s.io/v1beta1
+#kind: Ingress
+#metadata:
+#  name: echo-k8s-ingress
+#spec:
+#  rules:
+#  - host: echo1.k8s.yngvark.com
+#    http:
+#      paths:
+#      - backend:
+#          serviceName: echo1
+#          servicePort: 80
+#  - host: echo2.k8s.yngvark.com
+#    http:
+#      paths:
+#      - backend:
+#          serviceName: echo2
+#          servicePort: 80

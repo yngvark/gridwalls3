@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "ES2017",
+        "module": "CommonJs",
+        "sourceMap": true
+    },
+    "include": [
+        "game/**/*",
+        "ts_definitions/**/*.d.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ],
+    "files": [
+        "ts_definitions/phaser.d.ts"
+    ]
+}
