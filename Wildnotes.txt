@@ -1,31 +1,32 @@
-NESTE GANG:
-- Har nå flyttet nettverkslogikken tilbake til main.
-  - Har nå laget fungerende generering. Kanskje litt forvirrende bruk av channels for å signalisere at server send msg feila, eller at klienten har discconecta. Men det skal funke.
-  - Neste: Faktisk lage domenelogikk, tror jeg. Og få grafikk til å vises i frontend.
-  [x] Har nå laget fungerende generering. Kanskje litt forvirrende bruk av channels for å signalisere at server send msg feila, eller at klienten har discconecta. Men det skal funke.
-  [x] Neste: Faktisk lage domenelogikk, tror jeg. Og få grafikk til å vises i frontend.
-  [x] Prøver å få forbanna webpack til å inkludere phazer. ser nå på phaser-project-template, det funker jo,
-    prøv å fiks front-end2 til det.
-  [x] Fiks TLS på zombie-go, https://golang.org/pkg/net/http/ listenandserve TLS
-  [x] Vurder å fjern TLS på zombie-go lokalt, trenger vel ikke egentlig det (i motsetning til gatekeeper).
-  Øker kompleksitet.
-  [x] Fyr opp hele appen i okctl
-  [x] Få inn pulsar
-    [x] fått opp pulsar i backend
-      ELLER HAR jeg.. det står på https://pulsar.apache.org/docs/en/deploy-docker/ at det er et annet dockerimage enn det jeg bruker
-      og vet ikke om jeg har websocket enablet, står at det må enables på https://pulsar.apache.org/docs/en/client-libraries-websocket/.
-        men vet ikke åssen jeg konfer pulsar i docker engang
-    [ ] koble til pulsar med websocket-frontend biblioteket
-      [ ] Frontend kan ikke sende til zombie, den må kun lese fra zombie
-      [ ] Frontend må sende "start" til gameinit topicen
-  [ ] Del opp inn i separate repos
-  [ ] Få inn zap scan
-    https://oslokommune.slack.com/archives/C01H0P1FKJ4/p1607501469029000
-  [ ] Fiks autodeploy, mulig argo gjør det allerede
+-------------------------------------------------------------------
+ToDo
+-------------------------------------------------------------------
+- Hvorfor i huleste stopper ikke zombie generatoren med ticker? Ikke så viktig, men vil skjønne!
 
-------------------------------------------------------------------
+- Fiks all infrastruktur til okctl
+  - Deploy til okctl cluster.
+  - Docker image scanning. Github action som fikser det.
+  - Alerts
+    grafana
+    noe annet i tillegg?
+  - Tracing med tempo?
 
-Arkitektur:
+-------------------------------------------------------------------
+Done
+-------------------------------------------------------------------
+- Testing
+- Code scanning
+- Dependency scanning
+- Code coverage
+- Fiks sånn at frontend leser config fra index.html i stedet for /config endepunkt
+
+-------------------------------------------------------------------
+Wildnotes
+-------------------------------------------------------------------
+
+
+Arkitektur
+-------------------------------------------------------------------
   Mikrotjenester
   Event-basert
     Noe som støtter kinesis og pulsar
@@ -68,5 +69,3 @@ v3
 
 VURDER:
 - https://www.asyncapi.com/ - men det er ingen bra kodegenerator
-
-
